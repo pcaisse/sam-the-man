@@ -1,0 +1,17 @@
+#app {
+	width: 800px;
+	height: 600px;
+}
+
+#man {
+	width: 51px;
+	height: 51px;
+}
+
+.run-l {
+	background-image: url('../img/running_man_small_left.png');
+}
+
+.run-r {
+	background-image: url('../img/running_man_small_right.png');
+}
