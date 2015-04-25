@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     source = require('vinyl-source-stream'),
     browserify = require('browserify'),
     reactify = require('reactify'),
+    streamify = require('gulp-streamify'),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
@@ -10,29 +11,28 @@ var gulp = require('gulp'),
 var sourcesDir = './src/',
     appEntryPoint = 'app.js',
     targetDir = './static/js/';
-
-// gulp.task('js', function() {
-//     var bundler = browserify('./src/*.jsx')
-//     return bundler
-//         .transform(reactify)
-//         .bundle()
-//         .pipe(jshint)
-//         .pipe(concat('all.js'))
-//         .pipe(uglify())
-//         .pipe(rename({suffix: '.min'}))
-//         .pipe(gulp.dest('static/js'))
-//         .pipe(notify({ message: 'Scripts task complete' }));
-// });
  
-gulp.task('default', function() {
+gulp.task('dev', function() {
     return browserify({entries: [sourcesDir + appEntryPoint], debug: true})
         .transform(reactify)
         .bundle()
         .pipe(source(appEntryPoint))
         .pipe(gulp.dest(targetDir))
-        .pipe(notify('Bundling done.'));
+        .pipe(notify('Dev build done.'));
+});
+ 
+gulp.task('dist', function() {
+    return browserify({entries: [sourcesDir + appEntryPoint], debug: false})
+        .transform(reactify)
+        .bundle()
+        .pipe(source(appEntryPoint))
+        .pipe(streamify(jshint()))
+        .pipe(jshint.reporter('default'))
+        .pipe(streamify(uglify()))
+        .pipe(gulp.dest(targetDir))
+        .pipe(notify('Production build done.'));
 });
  
 gulp.task('watch', function() {
-    gulp.watch(sourcesDir + '*.js*', ['default']);
+    gulp.watch(sourcesDir + '**/*.js*', ['dev']);
 });

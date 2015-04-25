@@ -1,11 +1,17 @@
 #app {
+	position: relative;
 	width: 800px;
 	height: 600px;
+}
+
+#app div {
+	position: absolute;
 }
 
 #man {
 	width: 51px;
 	height: 51px;
+
 }
 
 .run-l {
