@@ -34,5 +34,5 @@ gulp.task('dist', function() {
 });
  
 gulp.task('watch', function() {
-    gulp.watch(sourcesDir + '**/*.js*', ['dev']);
+    gulp.watch(sourcesDir + '**/*', ['dev']);
 });

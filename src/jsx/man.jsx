@@ -1,39 +1,52 @@
 var React = require('react');
+var Moveable = require('../js/moveable.js');
 
 Man = React.createClass({
+	WALK_INCREMENT: 3,
+	mixins: [Moveable],
 	getInitialState: function(){
 		return {
-			top: 0,
-			left: 0
+			top: this.props.maxTop - this.props.height,
+			left: 0,
+			direction: this.DIRECTIONS.RIGHT
 		}
 	},
     render: function() {
     	var styles = {
-    		top: this.state.top + 'px',
-    		left: this.state.left + 'px'
+    		position: 'absolute',
+    		top: this.state.top,
+    		left: this.state.left,
+    		width: this.props.width,
+			height: this.props.height
     	};
+    	if (this.direction === this.DIRECTIONS.LEFT) {
+    		styles.transform = 'scaleX(-1)';
+    	}
         return (
-            <div id="man" className="run-r" alt="{this.props.name}" style={styles}></div>
+            <img id="man" src="img/running_man_small_right.png" alt="{this.props.name}" style={styles} />
         );
     },
     componentDidMount: function() {
-    	this.walk(true);
+    	this.walkRight();
     },
-    walk: function(direction) {
-    	var that = this;
-    	var newLeft;
-    	var walkId = setInterval(function() {
-    		newLeft = direction ? this.state.left + 1 : this.state.left - 1
-    		this.setState({
-    			left: newLeft
-    		});
-    	}.bind(this), 100);
+    walkRight: function(timestamp) {
+		this.move(this.DIRECTIONS.RIGHT, this.WALK_INCREMENT);
+    	if (this.state.left + this.props.width + this.WALK_INCREMENT <= this.props.maxLeft) {
+	    	window.requestAnimationFrame(this.walkRight);
+    	} else {
+    		this.direction = this.DIRECTIONS.LEFT;
+	    	window.requestAnimationFrame(this.walkLeft);
+    	}
+    },
+    walkLeft: function(timestamp) {
+		this.move(this.DIRECTIONS.LEFT, this.WALK_INCREMENT);
+    	if (this.state.left + this.WALK_INCREMENT > 0) {
+	    	window.requestAnimationFrame(this.walkLeft);
+    	} else {
+    		this.direction = this.DIRECTIONS.RIGHT;
+	    	window.requestAnimationFrame(this.walkRight);
+    	}
     }
 });
-
-React.render(
-    <Man name={"Sam"} />, 
-    document.getElementById('app')
-);
 
 module.exports = Man;
