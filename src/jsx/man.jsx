@@ -3,11 +3,12 @@ var Moveable = require('../js/moveable.js');
 
 Man = React.createClass({
 	WALK_INCREMENT: 3,
+	FALL_INCREMENT: 3,
 	mixins: [Moveable],
 	getInitialState: function(){
 		return {
-			top: this.props.maxTop - this.props.height,
-			left: 0,
+			top: 100,//this.props.maxTop - this.props.height,
+			left: 100,
 			direction: this.DIRECTIONS.RIGHT
 		}
 	},
@@ -26,8 +27,40 @@ Man = React.createClass({
             <img id="man" src="img/running_man_small_right.png" alt="{this.props.name}" style={styles} />
         );
     },
+    isFalling: function() {
+    	return this.state.top < this.props.maxTop - this.props.height;
+    },
     componentDidMount: function() {
-    	this.walkRight();
+    	if (this.isFalling()) {
+    		this.fall();
+    	} else {
+	    	this.walk();
+    	}
+    },
+    fall: function() {
+    	var count = 0;
+    	var fallAgain = function(timestamp) {
+    		var fallDistance = this.FALL_INCREMENT + count / 10;
+    		var totalFallDistance = this.props.maxTop - this.state.top - this.props.height;
+    		if (fallDistance > totalFallDistance) {
+    			fallDistance = totalFallDistance;
+    		}
+	    	this.move(this.DIRECTIONS.DOWN, fallDistance);
+	    	if (this.isFalling()) {
+	    		count++;
+		    	window.requestAnimationFrame(fallAgain);
+	    	} else {
+	    		this.walk();
+	    	}
+    	}.bind(this);
+    	fallAgain();
+    },
+    walk: function() {
+		if (this.state.direction === this.DIRECTIONS.RIGHT) {
+	    	this.walkRight();
+    	} else if (this.state.direction === this.DIRECTIONS.LEFT) {
+    		this.walkLeft();
+    	}
     },
     walkRight: function(timestamp) {
 		this.move(this.DIRECTIONS.RIGHT, this.WALK_INCREMENT);

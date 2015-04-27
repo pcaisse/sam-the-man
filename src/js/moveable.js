@@ -16,10 +16,10 @@ var Moveable = {
     		newState.left = this.state.left + increment;
     	}
     	if (direction === this.DIRECTIONS.UP) {
-    		newState.top = this.state.top + increment;
+    		newState.top = this.state.top - increment;
     	}
     	if (direction === this.DIRECTIONS.DOWN) {
-    		newState.top = this.state.top - increment;
+    		newState.top = this.state.top + increment;
     	}
 		this.setState(newState);
     }

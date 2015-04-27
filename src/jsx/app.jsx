@@ -11,14 +11,14 @@ App = React.createClass({
 		};
 		return (
 			<div id="app" style={styles}>
-				<Man name={"Sam"} width={51} height={51} maxLeft={this.props.width} maxTop={this.props.height} />
+				<Man name={"Sam"} width={50} height={50} maxLeft={this.props.width} maxTop={this.props.height} />
 			</div> 
 		);
 	}
 });
 
 React.render(
-    <App width={800} height={600} />, 
+    <App width={600} height={400} spacialMatrix={{}} />, 
     document.getElementById('main')
 );
 
