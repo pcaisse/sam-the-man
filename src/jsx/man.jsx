@@ -2,14 +2,18 @@ var React = require('react');
 var Moveable = require('../js/moveable.js');
 
 Man = React.createClass({
-	WALK_INCREMENT: 3,
+	WALK_INCREMENT: 2,
 	FALL_INCREMENT: 3,
 	mixins: [Moveable],
-	getInitialState: function(){
+	getInitialState: function() {
 		return {
-			top: 100,//this.props.maxTop - this.props.height,
-			left: 100,
 			direction: this.DIRECTIONS.RIGHT
+		}
+	},
+	getDefaultProps: function() {
+		return {
+			width: 50,
+			height: 50
 		}
 	},
     render: function() {
@@ -27,8 +31,9 @@ Man = React.createClass({
             <img id="man" src="img/running_man_small_right.png" alt="{this.props.name}" style={styles} />
         );
     },
-    isFalling: function() {
-    	return this.state.top < this.props.maxTop - this.props.height;
+    componentWillMount: function() {
+    	this.state.top = this.state.top || this.props.initialPos.top;
+    	this.state.left = this.state.left || this.props.initialPos.left;
     },
     componentDidMount: function() {
     	if (this.isFalling()) {
@@ -37,16 +42,41 @@ Man = React.createClass({
 	    	this.walk();
     	}
     },
+    isFalling: function() {
+    	return this.state.top < this.props.mapDimensions.height - this.props.height;
+    },
+    willCollide: function(rectThis) {
+    	var intersect = function(a, b) {
+    		return ((b.top >= a.top && b.top <= a.top + a.height) ||
+    			(b.top <= a.top && b.top + b.height >= a.top)) &&
+    			((b.left >= a.left && b.left <= a.left + a.width) ||
+    			(b.left <= a.left && b.left + b.width >= a.left));
+    	};
+    	return this.props.blocks.some(function(block) {
+    		block.width = 50;
+    		block.height = 50;
+    		return intersect(rectThis, block);
+    	}); 
+    },
+    canFall: function(fallDistance) {
+    	var rectThis = {
+			top: this.state.top + (fallDistance || this.FALL_INCREMENT),
+			left: this.state.left,
+			width: this.props.width,
+			height: this.props.height
+		};
+    	return this.isFalling() && !this.willCollide(rectThis);
+    },
     fall: function() {
     	var count = 0;
     	var fallAgain = function(timestamp) {
     		var fallDistance = this.FALL_INCREMENT + count / 10;
-    		var totalFallDistance = this.props.maxTop - this.state.top - this.props.height;
+    		var totalFallDistance = this.props.mapDimensions.height - this.state.top - this.props.height;
     		if (fallDistance > totalFallDistance) {
     			fallDistance = totalFallDistance;
     		}
-	    	this.move(this.DIRECTIONS.DOWN, fallDistance);
-	    	if (this.isFalling()) {
+	    	if (this.canFall(fallDistance)) {
+		    	this.move(this.DIRECTIONS.DOWN, fallDistance);
 	    		count++;
 		    	window.requestAnimationFrame(fallAgain);
 	    	} else {
@@ -64,11 +94,17 @@ Man = React.createClass({
     },
     walkRight: function(timestamp) {
 		this.move(this.DIRECTIONS.RIGHT, this.WALK_INCREMENT);
-    	if (this.state.left + this.props.width + this.WALK_INCREMENT <= this.props.maxLeft) {
-	    	window.requestAnimationFrame(this.walkRight);
+		var func;
+    	if (this.state.left + this.props.width + this.WALK_INCREMENT <= this.props.mapDimensions.width) {
+    		func = this.walkRight;
     	} else {
     		this.direction = this.DIRECTIONS.LEFT;
-	    	window.requestAnimationFrame(this.walkLeft);
+    		func = this.walkLeft;
+    	}
+    	if (this.canFall()) {
+    		this.fall();
+    	} else {
+	    	window.requestAnimationFrame(func);
     	}
     },
     walkLeft: function(timestamp) {
