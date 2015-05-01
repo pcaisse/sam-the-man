@@ -21,22 +21,20 @@ App = React.createClass({
 			height: this.props.height
 		};
 		var blocks = [
-			{top: 200, left: 100}
+			{top: 200, left: 100, height: 50, width: 50},
+			{top: 250, left: 150, height: 50, width: 100},
+			{top: 350, left: 450, height: 50, width: 50},
+			{top: 350, left: 100, height: 50, width: 50}
 		];
 		return (
 			<div id="app" style={styles}>
 				<Man name={"Sam"} mapDimensions={mapDimensions} initialPos={{top: 0, left: 100}} blocks={blocks} />
 				{blocks.map(function(block) {
-					return <Block mapDimensions={mapDimensions} initialPos={{top: block.top, left: block.left}} />;
+					return <Block {...block} />;
 				})}
 			</div> 
 		);
 	}
 });
-
-React.render(
-    <App spacialMatrix={{}} />, 
-    document.getElementById('main')
-);
 
 module.exports = App;

@@ -24,7 +24,7 @@ Man = React.createClass({
     		width: this.props.width,
 			height: this.props.height
     	};
-    	if (this.direction === this.DIRECTIONS.LEFT) {
+    	if (this.state.direction === this.DIRECTIONS.LEFT) {
     		styles.transform = 'scaleX(-1)';
     	}
         return (
@@ -45,7 +45,7 @@ Man = React.createClass({
     isFalling: function() {
     	return this.state.top < this.props.mapDimensions.height - this.props.height;
     },
-    willCollide: function(rectThis) {
+    willCollide: function(rect) {
     	var intersect = function(a, b) {
     		return ((b.top >= a.top && b.top <= a.top + a.height) ||
     			(b.top <= a.top && b.top + b.height >= a.top)) &&
@@ -53,9 +53,7 @@ Man = React.createClass({
     			(b.left <= a.left && b.left + b.width >= a.left));
     	};
     	return this.props.blocks.some(function(block) {
-    		block.width = 50;
-    		block.height = 50;
-    		return intersect(rectThis, block);
+    		return intersect(rect, block);
     	}); 
     },
     canFall: function(fallDistance) {
@@ -85,36 +83,45 @@ Man = React.createClass({
     	}.bind(this);
     	fallAgain();
     },
+    canWalk: function(direction) {
+    	var canWalk;
+    	if (this.state.direction === this.DIRECTIONS.RIGHT) {
+	    	canWalk = this.state.left + this.props.width + this.WALK_INCREMENT <= this.props.mapDimensions.width;
+    	} else {
+	    	canWalk = this.state.left + this.WALK_INCREMENT > 0;
+    	}
+    	var rectThis = {
+			top: this.state.top,
+			width: this.props.width,
+			height: this.props.height
+		};
+		if (direction === this.DIRECTIONS.RIGHT) {
+			rectThis.left = this.state.left + this.WALK_INCREMENT;
+		} else {
+			rectThis.left = this.state.left - this.WALK_INCREMENT;
+		}
+    	return canWalk && !this.willCollide(rectThis);
+    },
+    changeDirection: function() {
+    	if (this.state.direction == this.DIRECTIONS.RIGHT) {
+    		this.state.direction = this.DIRECTIONS.LEFT;
+    	} else {
+    		this.state.direction = this.DIRECTIONS.RIGHT;
+    	}
+    },
     walk: function() {
-		if (this.state.direction === this.DIRECTIONS.RIGHT) {
-	    	this.walkRight();
-    	} else if (this.state.direction === this.DIRECTIONS.LEFT) {
-    		this.walkLeft();
-    	}
-    },
-    walkRight: function(timestamp) {
-		this.move(this.DIRECTIONS.RIGHT, this.WALK_INCREMENT);
-		var func;
-    	if (this.state.left + this.props.width + this.WALK_INCREMENT <= this.props.mapDimensions.width) {
-    		func = this.walkRight;
-    	} else {
-    		this.direction = this.DIRECTIONS.LEFT;
-    		func = this.walkLeft;
-    	}
-    	if (this.canFall()) {
-    		this.fall();
-    	} else {
-	    	window.requestAnimationFrame(func);
-    	}
-    },
-    walkLeft: function(timestamp) {
-		this.move(this.DIRECTIONS.LEFT, this.WALK_INCREMENT);
-    	if (this.state.left + this.WALK_INCREMENT > 0) {
-	    	window.requestAnimationFrame(this.walkLeft);
-    	} else {
-    		this.direction = this.DIRECTIONS.RIGHT;
-	    	window.requestAnimationFrame(this.walkRight);
-    	}
+    	var walkAgain = function(timestamp) {
+    		this.move(this.state.direction, this.WALK_INCREMENT);
+	    	if (this.canFall()) {
+	    		this.fall();
+	    	} else {
+	    		if (!this.canWalk(this.state.direction)) {
+		    		this.changeDirection();
+		    	}
+		    	window.requestAnimationFrame(walkAgain);
+	    	}
+    	}.bind(this);
+		walkAgain();
     }
 });
 
