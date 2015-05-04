@@ -1,5 +1,6 @@
 var React = require('react');
-var Moveable = require('../js/moveable.js');
+var Moveable = require('../mixins/moveable');
+var Map = require('../mapData').Map;
 
 Man = React.createClass({
 	WALK_INCREMENT: 2,
@@ -7,7 +8,7 @@ Man = React.createClass({
 	mixins: [Moveable],
 	getInitialState: function() {
 		return {
-			direction: this.DIRECTIONS.RIGHT
+			direction: this.DIRECTIONS.RIGHT,
 		}
 	},
 	getDefaultProps: function() {
@@ -22,13 +23,14 @@ Man = React.createClass({
     		top: this.state.top,
     		left: this.state.left,
     		width: this.props.width,
-			height: this.props.height
+			height: this.props.height,
+			backgroundImage: 'url("img/running_man_small_right.png")'
     	};
     	if (this.state.direction === this.DIRECTIONS.LEFT) {
     		styles.transform = 'scaleX(-1)';
     	}
         return (
-            <img id="man" src="img/running_man_small_right.png" alt="{this.props.name}" style={styles} />
+            <div id="man" alt="{this.props.name}" style={styles} />
         );
     },
     componentWillMount: function() {
@@ -43,33 +45,18 @@ Man = React.createClass({
     	}
     },
     isFalling: function() {
-    	return this.state.top < this.props.mapDimensions.height - this.props.height;
-    },
-    willCollide: function(rect) {
-    	var intersect = function(a, b) {
-    		return ((b.top >= a.top && b.top <= a.top + a.height) ||
-    			(b.top <= a.top && b.top + b.height >= a.top)) &&
-    			((b.left >= a.left && b.left <= a.left + a.width) ||
-    			(b.left <= a.left && b.left + b.width >= a.left));
-    	};
-    	return this.props.blocks.some(function(block) {
-    		return intersect(rect, block);
-    	}); 
+    	return this.state.top < Map.height - this.props.height;
     },
     canFall: function(fallDistance) {
-    	var rectThis = {
-			top: this.state.top + (fallDistance || this.FALL_INCREMENT),
-			left: this.state.left,
-			width: this.props.width,
-			height: this.props.height
-		};
-    	return this.isFalling() && !this.willCollide(rectThis);
+        var changeInTop = fallDistance || this.FALL_INCREMENT;
+        var rect = this.toRect({ 'top': changeInTop });
+    	return this.isFalling() && !this.props.willCollide(rect);
     },
     fall: function() {
     	var count = 0;
     	var fallAgain = function(timestamp) {
     		var fallDistance = this.FALL_INCREMENT + count / 10;
-    		var totalFallDistance = this.props.mapDimensions.height - this.state.top - this.props.height;
+    		var totalFallDistance = Map.height - this.state.top - this.props.height;
     		if (fallDistance > totalFallDistance) {
     			fallDistance = totalFallDistance;
     		}
@@ -86,21 +73,16 @@ Man = React.createClass({
     canWalk: function(direction) {
     	var canWalk;
     	if (this.state.direction === this.DIRECTIONS.RIGHT) {
-	    	canWalk = this.state.left + this.props.width + this.WALK_INCREMENT <= this.props.mapDimensions.width;
+	    	canWalk = this.state.left + this.props.width + this.WALK_INCREMENT <= Map.width;
     	} else {
 	    	canWalk = this.state.left + this.WALK_INCREMENT > 0;
     	}
-    	var rectThis = {
-			top: this.state.top,
-			width: this.props.width,
-			height: this.props.height
-		};
-		if (direction === this.DIRECTIONS.RIGHT) {
-			rectThis.left = this.state.left + this.WALK_INCREMENT;
-		} else {
-			rectThis.left = this.state.left - this.WALK_INCREMENT;
+    	var changeInLeft = this.WALK_INCREMENT;
+		if (direction === this.DIRECTIONS.LEFT) {
+			changeInLeft *= -1;
 		}
-    	return canWalk && !this.willCollide(rectThis);
+        var rect = this.toRect({ 'left': changeInLeft });
+    	return canWalk && !this.props.willCollide(rect);
     },
     changeDirection: function() {
     	if (this.state.direction == this.DIRECTIONS.RIGHT) {

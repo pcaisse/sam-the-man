@@ -2,9 +2,10 @@ var React = require('react');
 
 React.initializeTouchEvents(true);
 
-var App = require('./jsx/app.jsx');
+var App = require('./views/app.jsx');
+var MapData = require('./mapData');
 
 React.render(
-    React.createElement(App), 
+    <App mapData={MapData} />, 
     document.getElementById('main')
 );

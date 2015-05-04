@@ -1,5 +1,3 @@
-var React = require('react');
-
 var Moveable = {
 	DIRECTIONS: {
 		UP: 0,
@@ -22,6 +20,15 @@ var Moveable = {
     		newState.top = this.state.top + increment;
     	}
 		this.setState(newState);
+    },
+    toRect: function(changeInPosition) {
+        // eg. changeInPosition = { 'top': 5 } or { 'left': -1 }
+        return {
+            top: this.state.top + (changeInPosition.top || 0),
+            left: this.state.left + (changeInPosition.left || 0),
+            width: this.props.width,
+            height: this.props.height
+        };
     }
 };
 
