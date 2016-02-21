@@ -1,41 +1,96 @@
 var React = require('react');
-var MapData = require('../mapData');
 var Man = require('./man.jsx');
 var Block = require('./block.jsx');
 var Elevator = require('./elevator.jsx');
 
-var intersect = function(a, b) {
-    return ((b.top >= a.top && b.top <= a.top + a.height) ||
-        (b.top <= a.top && b.top + b.height >= a.top)) &&
-        ((b.left >= a.left && b.left <= a.left + a.width) ||
-        (b.left <= a.left && b.left + b.width >= a.left));
-};
+var models = require('../models');
 
-Level = React.createClass({
+var Level = React.createClass({
+
+	getInitialState: function() {
+		return {
+			items: this.props.items
+		};
+	},
+
+	componentDidMount: function() {
+		window.requestAnimationFrame(this.update);
+	},
+
+	update: function() {
+		var items = this.state.items;
+		items.forEach(this.updateItem);
+		this.setState(items);
+		window.requestAnimationFrame(this.update);
+	},
+
+	updateItem: function(item, index, items) {
+    	if (item.canFall && this.isFalling(item, items)) {
+    		item.fall();
+    	} else if (item.canWalk) {
+			if (!this.canWalkStraight(item, items)) {
+				item.turn();
+			}
+	    	item.walk();
+    	}
+	},
+
+	itemCollidesWithImmovableItem: function(item, items) {
+		// Assume movable items cannot collide...?
+		return items.filter(function(item) {
+			return !item.isMovable;
+		}).some(function(immovableItem) {
+			return item.collidesWith(immovableItem);
+		});
+	},
+
+    itemIsWithinMapY: function(item) {
+    	return item.top >= 0 && item.top < this.props.map.height - item.height;
+    },
+
+    itemIsWithinMapX: function(item) {
+		return item.left >= 0 && item.left < this.props.map.width - item.width;
+    },
+
+    itemIsWithinMapBounds: function(item) {
+    	return this.itemIsWithinMapX(item) && this.itemIsWithinMapY(item);
+    },
+
+    canWalkStraight: function(item, items) {
+		var futureItem = Object.assign({}, item);
+		futureItem.walk();
+		return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
+    },
+
+    isFalling: function(item, items) {
+    	var futureItem = Object.assign({}, item);
+    	futureItem.fall();
+    	return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
+    },
+
+    modelToComponent: function(model, Component) {
+    	return this.props.items.filter(function(item) {
+			return item instanceof model;
+		}).map(function(item, index) {
+			return <Component key={index} {...item} />;
+		});
+    },
+
 	render: function() {
 		var styles = {
 			position: 'relative',
-			width: Map.width,
-			height: Map.height,
+			width: this.props.map.width,
+			height: this.props.map.height,
 			border: '1px solid #CCC'
 		};
 		return (
-			<div id="level" style={styles}>
-				<Man name={"Sam"} initialPos={this.props.man.initialPos} willCollide={this.objectWillCollide} />
-				{this.props.blocks.map(function(block) {
-					return <Block {...block} />;
-				})}
-				{this.props.elevators.map(function(elevator) {
-					return <Elevator {...elevator} />;
-				})}
+			<div style={styles}>
+				{this.modelToComponent(models.Man, Man)}
+				{this.modelToComponent(models.Block, Block)}
+				{this.modelToComponent(models.Elevator, Elevator)}
 			</div> 
 		);
 	},
-	objectWillCollide: function(rect) {
-        return this.props.blocks.some(function(block) {
-            return intersect(rect, block);
-        }); 
-    }
 });
 
 module.exports = Level;
