@@ -1,4 +1,6 @@
 var Item = require('./item');
+var FALL_INCREMENT = 3;
+var WALK_INCREMENT = 2;
 
 function Man(data) {
     if (typeof data.isFacingRight !== "boolean") {
@@ -7,6 +9,33 @@ function Man(data) {
     data.isMovable = true;
     data.canWalk = true;
     data.canFall = true;
+
+    this.fall = function() {
+        if (!this.isMovable || !this.canFall) {
+            throw new Error('Item cannot fall.');
+        }
+        this.top += FALL_INCREMENT;
+    }
+
+    this.walk = function() {
+        if (!this.isMovable || !this.canWalk) {
+            throw new Error('Item cannot walk.');
+        }
+        if (this.isFacingRight) {
+            this.left += WALK_INCREMENT;
+        } else {
+            this.left -= WALK_INCREMENT;
+        }
+    }
+
+    this.turn = function() {
+        if (this.isFacingRight) {
+            this.isFacingRight = false;
+        } else {
+            this.isFacingRight = true;
+        }
+    }
+    
     Item.call(this, data);
 }
 

@@ -32,6 +32,8 @@ var Level = React.createClass({
 				item.turn();
 			}
 	    	item.walk();
+    	} else if (item.canMoveVertically && this.canContinueMovingVertically(item, items)) {
+			item.moveVertically();
     	}
 	},
 
@@ -68,7 +70,13 @@ var Level = React.createClass({
     	return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
     },
 
-    modelToComponent: function(model, Component) {
+    canContinueMovingVertically: function(item, items) {
+    	var futureItem = Object.assign({}, item);
+    	futureItem.moveVertically();
+    	return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
+    },
+
+    modelsToComponents: function(model, Component) {
     	return this.props.items.filter(function(item) {
 			return item instanceof model;
 		}).map(function(item, index) {
@@ -85,9 +93,9 @@ var Level = React.createClass({
 		};
 		return (
 			<div style={styles}>
-				{this.modelToComponent(models.Man, Man)}
-				{this.modelToComponent(models.Block, Block)}
-				{this.modelToComponent(models.Elevator, Elevator)}
+				{this.modelsToComponents(models.Man, Man)}
+				{this.modelsToComponents(models.Block, Block)}
+				{this.modelsToComponents(models.Elevator, Elevator)}
 			</div> 
 		);
 	},
