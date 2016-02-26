@@ -1,7 +1,7 @@
 var Item = require('./item');
 
 function Block(data) {
-    data.isMovable = false;
+    data.isCollidable = true;
     Item.call(this, data);
 }
 

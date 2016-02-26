@@ -6,7 +6,9 @@ function Elevator(data) {
         throw new TypeError('Man requires a boolean isFacingRight property');
     }
     data.isMovable = true;
+    data.isEnterable = true;
     data.canMoveVertically = true;
+    data.enteredItem = null;
 
     this.moveVertically = function() {
         if (!this.isMovable || !this.canMoveVertically) {
@@ -17,6 +19,14 @@ function Elevator(data) {
         } else {
             this.top -= VERTICAL_MOVE_INCREMENT;
         }
+        if (this.enteredItem) {
+            this.enteredItem.top = this.top;
+        }
+    }
+
+    this.onEnter = function(enteredItem) {
+        this.enteredItem = enteredItem;
+        this.isStopped = false;
     }
 
     Item.call(this, data);

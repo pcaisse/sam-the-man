@@ -12,6 +12,10 @@ function Item(data) {
             ((item.left >= this.left && item.left <= this.left + this.width) ||
             (item.left <= this.left && item.left + item.width >= this.left));
     }
+
+    this.hasSamePosition = function(item) {
+        return this.top === item.top && this.left === item.left;
+    }
 }
 
 module.exports = Item;

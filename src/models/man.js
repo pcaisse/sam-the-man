@@ -1,5 +1,5 @@
 var Item = require('./item');
-var FALL_INCREMENT = 3;
+var FALL_INCREMENT = 4;
 var WALK_INCREMENT = 2;
 
 function Man(data) {

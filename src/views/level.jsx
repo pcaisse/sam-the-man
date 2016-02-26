@@ -25,24 +25,39 @@ var Level = React.createClass({
 	},
 
 	updateItem: function(item, index, items) {
-    	if (item.canFall && this.isFalling(item, items)) {
+    	if (item.canFall && !this.hasEntered && this.shouldContinueTo('fall', item, items)) {
     		item.fall();
-    	} else if (item.canWalk) {
-			if (!this.canWalkStraight(item, items)) {
-				item.turn();
+    	} else if (item.canWalk && !item.hasEntered) {
+			if (!this.shouldContinueTo('walk', item, items)) {
+				var enteredEnterableItem = this.enteredEnterableItems(item, items)[0];
+				if (enteredEnterableItem) {
+					item.hasEntered = true;
+					enteredEnterableItem.onEnter(item);
+				} else {
+					item.turn();
+				}
 			}
-	    	item.walk();
-    	} else if (item.canMoveVertically && this.canContinueMovingVertically(item, items)) {
+			if (!item.isStopped) {
+		    	item.walk();
+			}
+    	} else if (item.canMoveVertically && !item.isStopped && this.shouldContinueTo('moveVertically', item, items)) {
 			item.moveVertically();
     	}
 	},
 
-	itemCollidesWithImmovableItem: function(item, items) {
-		// Assume movable items cannot collide...?
-		return items.filter(function(item) {
-			return !item.isMovable;
-		}).some(function(immovableItem) {
-			return item.collidesWith(immovableItem);
+	itemCollidesWithCollidableItem: function(item, items) {
+		return items.filter(function(currItem) {
+			return currItem.isCollidable && currItem !== item;
+		}).some(function(collidableItem) {
+			return item.collidesWith(collidableItem);
+		});
+	},
+
+	enteredEnterableItems: function(item, items) {
+		return items.filter(function(currItem) {
+			if (currItem.isEnterable && currItem !== item) {
+				return item.hasSamePosition(currItem);
+			}
 		});
 	},
 
@@ -58,22 +73,10 @@ var Level = React.createClass({
     	return this.itemIsWithinMapX(item) && this.itemIsWithinMapY(item);
     },
 
-    canWalkStraight: function(item, items) {
+    shouldContinueTo: function(funcName, item, items) {
 		var futureItem = Object.assign({}, item);
-		futureItem.walk();
-		return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
-    },
-
-    isFalling: function(item, items) {
-    	var futureItem = Object.assign({}, item);
-    	futureItem.fall();
-    	return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
-    },
-
-    canContinueMovingVertically: function(item, items) {
-    	var futureItem = Object.assign({}, item);
-    	futureItem.moveVertically();
-    	return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithImmovableItem(futureItem, items);
+		futureItem[funcName].call(futureItem);
+		return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithCollidableItem(futureItem, items);
     },
 
     modelsToComponents: function(model, Component) {
