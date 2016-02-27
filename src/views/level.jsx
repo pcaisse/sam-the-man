@@ -30,7 +30,7 @@ var Level = React.createClass({
             item.fall();
         } else if (item.canWalk && !item.hasEntered) {
             if (!this.canContinueTo('walk', item, items)) {
-                var enteredEnterableItem = this.enteredEnterableItems(item, items)[0];
+                var enteredEnterableItem = this.emptyEnteredEnterableItems(item, items)[0];
                 if (enteredEnterableItem) {
                     enteredEnterableItem.onEntered(item);
                 } else {
@@ -42,8 +42,10 @@ var Level = React.createClass({
         } else if (item.canMoveVertically && !item.isStopped) {
             if (this.canContinueTo('moveVertically', item, items)) {
                 item.moveVertically();
-            } else {
+            } else if (!item.enteredItem) {
                 item.onExited();
+            } else {
+                item.enteredItem.onExit();
             }
         }
     },
@@ -65,9 +67,9 @@ var Level = React.createClass({
         });
     },
 
-    enteredEnterableItems: function(item, items) {
+    emptyEnteredEnterableItems: function(item, items) {
         return items.filter(function(currItem) {
-            if (currItem.isEnterable && currItem !== item) {
+            if (currItem.isEnterable && !currItem.enteredItem && currItem !== item) {
                 return item.hasSamePosition(currItem);
             }
         });
