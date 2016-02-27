@@ -11,10 +11,9 @@ var App = React.createClass({
 	render: function() {
 		var map = MapData.map;
 		var styles = {
-			position: 'relative',
 			width: map.width,
 			height: map.height,
-			border: '1px solid #000'
+			backgroundColor: '#e4e4e4'
 		};
 		var items = MapData.levels[this.state.currLevel].items;
 		return (

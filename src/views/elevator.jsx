@@ -6,14 +6,9 @@ Elevator = React.createClass({
     		position: 'absolute',
     		top: this.props.top,
     		left: this.props.left,
-    		width: this.props.width || 50,
-			height: this.props.height || 50,
-            borderColor: 'brown',
-            borderWidth: 1,
-            borderTopStyle: 'solid',
-            borderBottomStyle: 'solid',
-            borderLeftStyle: 'dashed',
-            borderRightStyle: 'dashed'
+    		width: this.props.width,
+			height: this.props.height,
+            boxShadow: 'inset 0px 0px 0px 1px brown'
     	};
         return (
             <div style={styles} />

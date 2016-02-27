@@ -1,5 +1,5 @@
 var Item = require('./item');
-var FALL_INCREMENT = 4;
+var FALL_INCREMENT = 5;
 var WALK_INCREMENT = 2;
 
 function Man(data) {
@@ -35,7 +35,15 @@ function Man(data) {
             this.isFacingRight = true;
         }
     }
-    
+
+    this.onEnter = function() {
+        this.hasEntered = true;
+    }
+
+    this.onExit = function() {
+        this.hasEntered = false;
+    }
+
     Item.call(this, data);
 }
 

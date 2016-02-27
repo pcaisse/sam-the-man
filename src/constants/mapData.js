@@ -11,7 +11,8 @@ MapData.map = {
 
 MapData.levels = [
 	new Level([
-		new Elevator({top: 348, left: 0, height: 50, width: 50, isMovingDown: false, isStopped: true}),
+		new Elevator({top: 350, left: 0, height: 50, width: 50, isMovingDown: false, isStopped: true}),
+		new Block({top: 50, left: 50, height: 50, width: 50}),
 		new Block({top: 200, left: 100, height: 50, width: 50}),
 		new Block({top: 250, left: 150, height: 50, width: 100}),
 		new Block({top: 250, left: 250, height: 50, width: 50}),

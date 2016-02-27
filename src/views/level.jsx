@@ -25,23 +25,25 @@ var Level = React.createClass({
 	},
 
 	updateItem: function(item, index, items) {
-    	if (item.canFall && !this.hasEntered && this.shouldContinueTo('fall', item, items)) {
+    	if (item.canFall && !item.hasEntered && this.shouldContinueTo('fall', item, items)) {
     		item.fall();
     	} else if (item.canWalk && !item.hasEntered) {
 			if (!this.shouldContinueTo('walk', item, items)) {
 				var enteredEnterableItem = this.enteredEnterableItems(item, items)[0];
 				if (enteredEnterableItem) {
-					item.hasEntered = true;
-					enteredEnterableItem.onEnter(item);
+					enteredEnterableItem.onEntered(item);
 				} else {
 					item.turn();
 				}
-			}
-			if (!item.isStopped) {
+			} else {
 		    	item.walk();
 			}
-    	} else if (item.canMoveVertically && !item.isStopped && this.shouldContinueTo('moveVertically', item, items)) {
-			item.moveVertically();
+    	} else if (item.canMoveVertically && !item.isStopped) {
+    		if (this.shouldContinueTo('moveVertically', item, items)) {
+				item.moveVertically();
+			} else {
+				item.onExited();
+			}
     	}
 	},
 
@@ -62,11 +64,11 @@ var Level = React.createClass({
 	},
 
     itemIsWithinMapY: function(item) {
-    	return item.top >= 0 && item.top < this.props.map.height - item.height;
+    	return item.top >= 0 && item.top <= this.props.map.height - item.height;
     },
 
     itemIsWithinMapX: function(item) {
-		return item.left >= 0 && item.left < this.props.map.width - item.width;
+		return item.left >= 0 && item.left <= this.props.map.width - item.width;
     },
 
     itemIsWithinMapBounds: function(item) {
@@ -92,7 +94,6 @@ var Level = React.createClass({
 			position: 'relative',
 			width: this.props.map.width,
 			height: this.props.map.height,
-			border: '1px solid #CCC'
 		};
 		return (
 			<div style={styles}>

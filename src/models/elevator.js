@@ -24,9 +24,16 @@ function Elevator(data) {
         }
     }
 
-    this.onEnter = function(enteredItem) {
+    this.onEntered = function(enteredItem) {
+        enteredItem.onEnter();
         this.enteredItem = enteredItem;
         this.isStopped = false;
+    }
+
+    this.onExited = function() {
+        this.enteredItem.onExit();
+        this.enteredItem = null;
+        this.isStopped = true;
     }
 
     Item.call(this, data);

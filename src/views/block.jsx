@@ -6,8 +6,8 @@ Block = React.createClass({
     		position: 'absolute',
     		top: this.props.top,
     		left: this.props.left,
-    		width: this.props.width || 50,
-			height: this.props.height || 50,
+    		width: this.props.width,
+			height: this.props.height,
             backgroundColor: 'black'
     	};
         return (
