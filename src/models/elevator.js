@@ -19,7 +19,8 @@ function Elevator(data) {
         } else {
             this.top -= VERTICAL_MOVE_INCREMENT;
         }
-        if (this.enteredItem) {
+        if (this instanceof Elevator && this.enteredItem) { // type check is a hack to avoid changing enetered item
+                                                            // when cloning the object (clone is not of Elevator type)
             this.enteredItem.top = this.top;
         }
     }
@@ -27,6 +28,7 @@ function Elevator(data) {
     this.onEntered = function(enteredItem) {
         enteredItem.onEnter();
         this.enteredItem = enteredItem;
+        this.isMovingDown = !this.isMovingDown;
         this.isStopped = false;
     }
 
