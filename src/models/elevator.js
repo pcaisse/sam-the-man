@@ -28,28 +28,17 @@ function Elevator(data) {
     this.onEntered = function(enteredItem) {
         enteredItem.onEnter();
         this.enteredItem = enteredItem;
-        this.start();
-    }
-
-    this.start = function() {
         this.isStopped = false;
     }
 
     this.stop = function() {
         this.enteredItem.onStop();
         this.isStopped = true;
-    }
-
-    this.unload = function() {
         this.isUnloading = true;
     }
 
-    this.stopUnloading = function() {
-        this.isUnloading = false;
-    }
-
     this.onExited = function() {
-        this.stopUnloading();
+        this.isUnloading = false;
         this.enteredItem = null;
         this.isMovingDown = !this.isMovingDown;
     }

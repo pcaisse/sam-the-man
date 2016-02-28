@@ -48,8 +48,6 @@ var Level = React.createClass({
                 item.moveVertically();
             } else {
                 item.stop();
-                item.unload();
-                item.enteredItem.stopWaiting();
             }
         }
     },
