@@ -3,7 +3,10 @@ var VERTICAL_MOVE_INCREMENT = 1;
 
 function Elevator(data) {
     if (typeof data.isMovingDown !== "boolean") {
-        throw new TypeError('Man requires a boolean isFacingRight property');
+        throw new TypeError('Elevator requires a boolean isMovingDown property');
+    }
+    if (typeof data.isStopped !== "boolean") {
+        throw new TypeError('Elevator requires a boolean isStopped property');
     }
     data.isMovable = true;
     data.isEnterable = true;
