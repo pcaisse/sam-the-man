@@ -45,7 +45,7 @@ function Man(data) {
     }
 
     this.onEnter = this.wait;
-    this.onExit = this.stopWaiting;
+    this.onStop = this.stopWaiting;
 
     Item.call(this, data);
 }

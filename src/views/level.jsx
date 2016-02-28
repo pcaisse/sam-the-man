@@ -30,17 +30,31 @@ var Level = React.createClass({
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
             var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item, items);
+            var canContinueToWalk = function() {
+                return this.canContinueTo('walk', item, items);
+            }.bind(this);
             if (enterableItemWhichContainsItem) {
                 if (enterableItemWhichContainsItem.enteredItem) {
                     enterableItemWhichContainsItem.onExited();
+                    // Exit enterable item (elevator)
+                    // Must walk to exit the elevator (only turning will be interpreted as entering next iteration)
+                    if (canContinueToWalk()) {
+                        item.walk();
+                    } else {
+                        item.turn();
+                        if (canContinueToWalk()) {
+                            item.walk();
+                        }
+                    }
                 } else {
                     enterableItemWhichContainsItem.onEntered(item);
                 }
-            }
-            if (this.canContinueTo('walk', item, items)) {
-                item.walk()
             } else {
-                item.turn();
+                if (canContinueToWalk()) {
+                    item.walk()
+                } else {
+                    item.turn();
+                }
             }
         } else if (item.canMoveVertically && !item.isStopped) {
             if (this.canContinueTo('moveVertically', item, items)) {

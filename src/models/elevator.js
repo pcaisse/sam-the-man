@@ -36,11 +36,11 @@ function Elevator(data) {
     }
 
     this.stop = function() {
+        this.enteredItem.onStop();
         this.isStopped = true;
     }
 
     this.onExited = function() {
-        this.enteredItem.onExit();
         this.enteredItem = null;
         this.isMovingDown = !this.isMovingDown;
     }
