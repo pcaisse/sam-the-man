@@ -36,13 +36,16 @@ function Man(data) {
         }
     }
 
-    this.onEnter = function() {
-        this.hasEntered = true;
+    this.wait = function() {
+        this.isWaiting = true;
     }
 
-    this.onExit = function() {
-        this.hasEntered = false;
+    this.stopWaiting = function() {
+        this.isWaiting = false;
     }
+
+    this.onEnter = this.wait;
+    this.onExit = this.stopWaiting;
 
     Item.call(this, data);
 }

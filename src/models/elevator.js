@@ -28,14 +28,21 @@ function Elevator(data) {
     this.onEntered = function(enteredItem) {
         enteredItem.onEnter();
         this.enteredItem = enteredItem;
+        this.start();
+    }
+
+    this.start = function() {
         this.isStopped = false;
+    }
+
+    this.stop = function() {
+        this.isStopped = true;
     }
 
     this.onExited = function() {
         this.enteredItem.onExit();
         this.enteredItem = null;
         this.isMovingDown = !this.isMovingDown;
-        this.isStopped = true;
     }
 
     Item.call(this, data);

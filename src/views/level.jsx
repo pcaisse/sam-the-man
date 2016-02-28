@@ -25,27 +25,29 @@ var Level = React.createClass({
     },
 
     updateItem: function(item, index, items) {
-        if (item.canFall && !item.hasEntered && !this.itemCollidesWithEnterableItem(item, items) &&
+        if (item.canFall && !item.isWaiting && !this.itemCollidesWithEnterableItem(item, items) &&
                 this.canContinueTo('fall', item, items)) {
             item.fall();
-        } else if (item.canWalk && !item.hasEntered) {
-            if (!this.canContinueTo('walk', item, items)) {
-                var enteredEnterableItem = this.emptyEnteredEnterableItems(item, items)[0];
-                if (enteredEnterableItem) {
-                    enteredEnterableItem.onEntered(item);
+        } else if (item.canWalk && !item.isWaiting) {
+            var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item, items);
+            if (enterableItemWhichContainsItem) {
+                if (enterableItemWhichContainsItem.enteredItem) {
+                    enterableItemWhichContainsItem.onExited();
                 } else {
-                    item.turn();
+                    enterableItemWhichContainsItem.onEntered(item);
                 }
+            }
+            if (this.canContinueTo('walk', item, items)) {
+                item.walk()
             } else {
-                item.walk();
+                item.turn();
             }
         } else if (item.canMoveVertically && !item.isStopped) {
             if (this.canContinueTo('moveVertically', item, items)) {
                 item.moveVertically();
-            } else if (!item.enteredItem) {
-                item.onExited();
             } else {
-                item.enteredItem.onExit();
+                item.stop();
+                item.enteredItem.stopWaiting();
             }
         }
     },
@@ -67,12 +69,12 @@ var Level = React.createClass({
         });
     },
 
-    emptyEnteredEnterableItems: function(item, items) {
+    enterableItemWhichContainsItem: function(item, items) {
         return items.filter(function(currItem) {
-            if (currItem.isEnterable && !currItem.enteredItem && currItem !== item) {
+            if (currItem.isEnterable && currItem !== item) {
                 return item.hasSamePosition(currItem);
             }
-        });
+        })[0];
     },
 
     itemIsWithinMapY: function(item) {
