@@ -25,8 +25,7 @@ var Level = React.createClass({
     },
 
     updateItem: function(item, index, items) {
-        if (item.canFall && !item.isWaiting && !this.itemCollidesWithEnterableItem(item, items) &&
-                this.canContinueTo('fall', item, items)) {
+        if (item.canFall && !item.isWaiting && this.canContinueTo('fall', item, items, 'isEnterable')) {
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
             var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item, items);
@@ -53,17 +52,11 @@ var Level = React.createClass({
     },
 
     // TODO: Make these functions into methods on an Items collection
-    itemCollidesWithEnterableItem: function(item, items) {
+    itemCollidesWithItemWhere: function(item, items, props) {
         return items.filter(function(currItem) {
-            return currItem.isEnterable && currItem !== item;
-        }).some(function(collidableItem) {
-            return item.collidesWith(collidableItem);
-        });
-    },
-
-    itemCollidesWithCollidableItem: function(item, items) {
-        return items.filter(function(currItem) {
-            return currItem.isCollidable && currItem !== item;
+            return currItem !== item && props.some(function(prop) {
+                return currItem[prop];
+            });
         }).some(function(collidableItem) {
             return item.collidesWith(collidableItem);
         });
@@ -89,10 +82,17 @@ var Level = React.createClass({
         return this.itemIsWithinMapX(item) && this.itemIsWithinMapY(item);
     },
 
-    canContinueTo: function(funcName, item, items) {
+    canContinueTo: function(funcName, item, items, extraProps) {
+        // By default, cannot continue action if item will collide with a collidable item
+        var props = ['isCollidable'];
+        if (extraProps) {
+            props = props.concat(extraProps);
+        }
+        // Clone item and put it in its future state to see if it is valid
         var futureItem = Object.assign({}, item);
         futureItem[funcName].call(futureItem);
-        return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithCollidableItem(futureItem, items);
+        // Perform checks
+        return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithItemWhere(futureItem, items, props);
     },
 
     modelsToComponents: function(model, Component) {
