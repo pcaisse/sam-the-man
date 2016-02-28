@@ -30,28 +30,15 @@ var Level = React.createClass({
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
             var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item, items);
-            var canContinueToWalk = function() {
-                return this.canContinueTo('walk', item, items);
-            }.bind(this);
-            if (enterableItemWhichContainsItem) {
-                if (enterableItemWhichContainsItem.enteredItem) {
-                    enterableItemWhichContainsItem.onExited();
-                    // Exit enterable item (elevator)
-                    // Must walk to exit the elevator (only turning will be interpreted as entering next iteration)
-                    if (canContinueToWalk()) {
-                        item.walk();
-                    } else {
-                        item.turn();
-                        if (canContinueToWalk()) {
-                            item.walk();
-                        }
+            if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.enteredItem) {
+                enterableItemWhichContainsItem.onEntered(item);
+            }
+            if (!item.isWaiting) {
+                if (this.canContinueTo('walk', item, items)) {
+                    item.walk();
+                    if (enterableItemWhichContainsItem && enterableItemWhichContainsItem.isUnloading) {
+                        enterableItemWhichContainsItem.onExited();
                     }
-                } else {
-                    enterableItemWhichContainsItem.onEntered(item);
-                }
-            } else {
-                if (canContinueToWalk()) {
-                    item.walk()
                 } else {
                     item.turn();
                 }
@@ -61,6 +48,7 @@ var Level = React.createClass({
                 item.moveVertically();
             } else {
                 item.stop();
+                item.unload();
                 item.enteredItem.stopWaiting();
             }
         }

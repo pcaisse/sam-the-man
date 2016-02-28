@@ -40,7 +40,16 @@ function Elevator(data) {
         this.isStopped = true;
     }
 
+    this.unload = function() {
+        this.isUnloading = true;
+    }
+
+    this.stopUnloading = function() {
+        this.isUnloading = false;
+    }
+
     this.onExited = function() {
+        this.stopUnloading();
         this.enteredItem = null;
         this.isMovingDown = !this.isMovingDown;
     }
