@@ -1,3 +1,5 @@
+var MAP = require('../constants/map');
+
 function Item(data) {
     [data.top, data.left, data.width, data.height].forEach(function(arg) {
         if (typeof arg !== "number") {
@@ -5,6 +7,18 @@ function Item(data) {
         }
     });
     Object.assign(this, data);
+
+    this.isWithinMapY = function() {
+        return this.top >= 0 && this.top <= MAP.height - this.height;
+    }
+
+    this.isWithinMapX = function() {
+        return this.left >= 0 && this.left <= MAP.width - this.width;
+    }
+
+    this.isWithinMapBounds = function() {
+        return this.isWithinMapX() && this.isWithinMapY();
+    }
 
     this.collidesWith = function(item) {
         return this.left < item.left + item.width &&

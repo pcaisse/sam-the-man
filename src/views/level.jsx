@@ -28,8 +28,8 @@ var Level = React.createClass({
         if (item.canFall && !item.isWaiting && this.canContinueTo('fall', item, items, 'isEnterable')) {
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
-            var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item, items);
-            if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.enteredItem) {
+            var enterableItemWhichContainsItem = items.enterableItemWhichContainsItem(item);
+            if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
                 enterableItemWhichContainsItem.onEntered(item);
             }
             if (!item.isWaiting) {
@@ -51,37 +51,6 @@ var Level = React.createClass({
         }
     },
 
-    // TODO: Make these functions into methods on an Items collection
-    itemCollidesWithItemWhere: function(item, items, props) {
-        return items.filter(function(currItem) {
-            return currItem !== item && props.some(function(prop) {
-                return currItem[prop];
-            });
-        }).some(function(collidableItem) {
-            return item.collidesWith(collidableItem);
-        });
-    },
-
-    enterableItemWhichContainsItem: function(item, items) {
-        return items.filter(function(currItem) {
-            if (currItem.isEnterable && currItem !== item) {
-                return item.hasSamePosition(currItem);
-            }
-        })[0];
-    },
-
-    itemIsWithinMapY: function(item) {
-        return item.top >= 0 && item.top <= this.props.map.height - item.height;
-    },
-
-    itemIsWithinMapX: function(item) {
-        return item.left >= 0 && item.left <= this.props.map.width - item.width;
-    },
-
-    itemIsWithinMapBounds: function(item) {
-        return this.itemIsWithinMapX(item) && this.itemIsWithinMapY(item);
-    },
-
     canContinueTo: function(funcName, item, items, extraProps) {
         // By default, cannot continue action if item will collide with a collidable item
         var props = ['isCollidable'];
@@ -92,7 +61,7 @@ var Level = React.createClass({
         var futureItem = Object.assign({}, item);
         futureItem[funcName].call(futureItem);
         // Perform checks
-        return this.itemIsWithinMapBounds(futureItem) && !this.itemCollidesWithItemWhere(futureItem, items, props);
+        return futureItem.isWithinMapBounds() && !items.itemCollidesWithItemWhere(futureItem, props);
     },
 
     modelsToComponents: function(model, Component) {

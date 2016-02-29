@@ -13,6 +13,10 @@ function Elevator(data) {
     data.canMoveVertically = true;
     data.enteredItem = null;
 
+    this.isEntered = function() {
+        return !!this.enteredItem;
+    }
+
     this.moveVertically = function() {
         if (!this.isMovable || !this.canMoveVertically) {
             throw new Error('Item cannot move vertically.');
