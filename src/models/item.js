@@ -10,26 +10,26 @@ function Item(data) {
 
     this.isWithinMapY = function() {
         return this.top >= 0 && this.top <= MAP.height - this.height;
-    }
+    };
 
     this.isWithinMapX = function() {
         return this.left >= 0 && this.left <= MAP.width - this.width;
-    }
+    };
 
     this.isWithinMapBounds = function() {
         return this.isWithinMapX() && this.isWithinMapY();
-    }
+    };
 
     this.collidesWith = function(item) {
         return this.left < item.left + item.width &&
             this.left + this.width > item.left &&
             this.top < item.top + item.height &&
             this.height + this.top > item.top;
-    }
+    };
 
     this.hasSamePosition = function(item) {
         return this.top === item.top && this.left === item.left;
-    }
+    };
 }
 
 module.exports = Item;

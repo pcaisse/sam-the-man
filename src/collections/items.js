@@ -9,7 +9,7 @@ function Items() {
         if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
             throw new TypeError("Items in level must be of valid types.");
         }
-    })
+    });
 
     return this;
 }
@@ -24,7 +24,7 @@ Items.prototype.itemCollidesWithItemWhere = function(item, props) {
     }).some(function(filteredItem) {
         return item.collidesWith(filteredItem);
     });
-}
+};
 
 Items.prototype.enterableItemWhichContainsItem = function(item) {
     return this.filter(function(currItem) {
@@ -32,6 +32,6 @@ Items.prototype.enterableItemWhichContainsItem = function(item) {
             return item.hasSamePosition(currItem);
         }
     })[0];
-}
+};
 
 module.exports = Items;

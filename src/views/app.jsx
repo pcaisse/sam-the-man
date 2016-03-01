@@ -7,7 +7,7 @@ var App = React.createClass({
     getInitialState: function() {
         return {
             currLevel: 0
-        }
+        };
     },
     render: function() {
         var styles = {

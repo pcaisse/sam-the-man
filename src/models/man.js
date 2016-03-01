@@ -15,7 +15,7 @@ function Man(data) {
             throw new Error('Item cannot fall.');
         }
         this.top += FALL_INCREMENT;
-    }
+    };
 
     this.walk = function() {
         if (!this.isMovable || !this.canWalk) {
@@ -26,7 +26,7 @@ function Man(data) {
         } else {
             this.left -= WALK_INCREMENT;
         }
-    }
+    };
 
     this.turn = function() {
         if (this.isFacingRight) {
@@ -34,15 +34,15 @@ function Man(data) {
         } else {
             this.isFacingRight = true;
         }
-    }
+    };
 
     this.onEnter = function() {
         this.isWaiting = true;
-    }
+    };
 
     this.onStop = function() {
         this.isWaiting = false;
-    }
+    };
 
     Item.call(this, data);
 }

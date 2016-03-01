@@ -15,7 +15,7 @@ function Elevator(data) {
 
     this.isEntered = function() {
         return !!this.enteredItem;
-    }
+    };
 
     this.moveVertically = function() {
         if (!this.isMovable || !this.canMoveVertically) {
@@ -30,25 +30,25 @@ function Elevator(data) {
                                                             // when cloning the object (clone is not of Elevator type)
             this.enteredItem.top = this.top;
         }
-    }
+    };
 
     this.onEntered = function(enteredItem) {
         enteredItem.onEnter();
         this.enteredItem = enteredItem;
         this.isStopped = false;
-    }
+    };
 
     this.stop = function() {
         this.enteredItem.onStop();
         this.isStopped = true;
         this.isUnloading = true;
-    }
+    };
 
     this.onExited = function() {
         this.isUnloading = false;
         this.enteredItem = null;
         this.isMovingDown = !this.isMovingDown;
-    }
+    };
 
     Item.call(this, data);
 }

@@ -3,8 +3,8 @@ var Elevator = require('./elevator');
 var Level = require('./level');
 var Man = require('./man');
 module.exports = {
-    Block,
-    Elevator,
-    Level,
-    Man
+    Block: Block,
+    Elevator: Elevator,
+    Level: Level,
+    Man: Man
 };
