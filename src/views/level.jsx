@@ -25,17 +25,27 @@ var Level = React.createClass({
     },
 
     updateItem: function(item, index, items) {
-        if (item.canFall && !item.isWaiting && this.canContinueTo('fall', item, items, 'isEnterable')) {
+        var canContinueToFall = item.canFall && this.canContinueTo('fall', item, items, 'isEnterable');
+        if (item.canFall && !item.isWaiting && canContinueToFall.canContinue) {
+            // Item can continue falling
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
             var enterableItemWhichContainsItem = items.enterableItemWhichContainsItem(item);
             if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
+                // Tell entered item that it has been entered
                 enterableItemWhichContainsItem.onEntered(item);
             }
+            if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable) {
+                // Item is walking on droppable item
+                canContinueToFall.collisionItem.drop();
+            }
             if (!item.isWaiting) {
-                if (this.canContinueTo('walk', item, items)) {
+                var canContinueToWalk = this.canContinueTo('walk', item, items);
+                if (canContinueToWalk.canContinue) {
+                    // Item can continue walking
                     item.walk();
                     if (enterableItemWhichContainsItem && enterableItemWhichContainsItem.isUnloading) {
+                        // Tell entered item that contained item has exited
                         enterableItemWhichContainsItem.onExited();
                     }
                 } else {
@@ -43,7 +53,9 @@ var Level = React.createClass({
                 }
             }
         } else if (item.canMoveVertically && !item.isStopped) {
-            if (this.canContinueTo('moveVertically', item, items)) {
+            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item, items);
+            if (canContinueToMoveVertically.canContinue) {
+                // Item can continue to move vertically
                 item.moveVertically();
             } else {
                 item.stop();
@@ -61,7 +73,11 @@ var Level = React.createClass({
         var futureItem = Object.assign({}, item);
         futureItem[funcName].call(futureItem);
         // Perform checks
-        return futureItem.isWithinMapBounds() && !items.itemCollidesWithItemWhere(futureItem, props);
+        var collisionItem = items.itemCollidesWithItemWhere(futureItem, props);
+        return {
+            canContinue: futureItem.isWithinMapBounds() && !collisionItem,
+            collisionItem: collisionItem
+        };
     },
 
     modelsToComponents: function(model, Component) {

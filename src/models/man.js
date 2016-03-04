@@ -1,24 +1,16 @@
 var Item = require('./item');
-var FALL_INCREMENT = 5;
+var Falls = require('../mixins/falls');
 var WALK_INCREMENT = 2;
 
 function Man(data) {
     if (typeof data.isFacingRight !== "boolean") {
         throw new TypeError('Man requires a boolean isFacingRight property');
     }
-    data.isMovable = true;
     data.canWalk = true;
     data.canFall = true;
 
-    this.fall = function() {
-        if (!this.isMovable || !this.canFall) {
-            throw new Error('Item cannot fall.');
-        }
-        this.top += FALL_INCREMENT;
-    };
-
     this.walk = function() {
-        if (!this.isMovable || !this.canWalk) {
+        if (!this.canWalk) {
             throw new Error('Item cannot walk.');
         }
         if (this.isFacingRight) {
@@ -44,6 +36,7 @@ function Man(data) {
         this.isWaiting = false;
     };
 
+    Falls.call(this);
     Item.call(this, data);
 }
 

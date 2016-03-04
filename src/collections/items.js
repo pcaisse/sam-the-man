@@ -5,10 +5,15 @@ var Elevator = require('../models/elevator');
 function Items() {
     this.push.apply(this, arguments);
 
+    var count = 0;
     this.forEach(function(item) {
+        // Validate
         if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
             throw new TypeError("Items in level must be of valid types.");
         }
+        // Give unique id
+        item.id = count;
+        count++;
     });
 
     return this;
@@ -18,17 +23,17 @@ Items.prototype = Object.create(Array.prototype);
 
 Items.prototype.itemCollidesWithItemWhere = function(item, props) {
     return this.filter(function(currItem) {
-        return currItem !== item && props.some(function(prop) {
+        if (currItem.id !== item.id && item.collidesWith(currItem) && props.some(function(prop) {
             return currItem[prop];
-        });
-    }).some(function(filteredItem) {
-        return item.collidesWith(filteredItem);
-    });
+        })) {
+            return currItem;
+        };
+    })[0];
 };
 
 Items.prototype.enterableItemWhichContainsItem = function(item) {
     return this.filter(function(currItem) {
-        if (currItem.isEnterable && currItem !== item) {
+        if (currItem.id !== item.id && currItem.isEnterable) {
             return item.hasSamePosition(currItem);
         }
     })[0];

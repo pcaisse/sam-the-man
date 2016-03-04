@@ -8,7 +8,6 @@ function Elevator(data) {
     if (typeof data.isStopped !== "boolean") {
         throw new TypeError('Elevator requires a boolean isStopped property');
     }
-    data.isMovable = true;
     data.isEnterable = true;
     data.canMoveVertically = true;
     data.enteredItem = null;
@@ -18,7 +17,7 @@ function Elevator(data) {
     };
 
     this.moveVertically = function() {
-        if (!this.isMovable || !this.canMoveVertically) {
+        if (!this.canMoveVertically) {
             throw new Error('Item cannot move vertically.');
         }
         if (this.isMovingDown) {
