@@ -1,12 +1,12 @@
-var FALL_INCREMENT = 5;
+var MAP = require('../constants/map');
 
 function Falls() {
     this.fall = function() {
         if (!this.canFall) {
             throw new Error('Item cannot fall.');
         }
-        this.top += FALL_INCREMENT;
+        this.top += MAP.fallIncrement;
     };
-};
+}
 
 module.exports = Falls;

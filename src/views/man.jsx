@@ -8,7 +8,8 @@ var Man = React.createClass({
     		left: this.props.left,
     		width: this.props.width,
 			height: this.props.height,
-			backgroundImage: 'url("img/running_man_small_right.png")'
+			backgroundImage: 'url("img/running_man.png")',
+            backgroundSize: `${this.props.width}px ${this.props.height}px`
     	};
     	if (!this.props.isFacingRight) {
     		styles.transform = 'scaleX(-1)';

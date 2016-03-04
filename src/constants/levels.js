@@ -8,16 +8,16 @@ var Man = require('../models/man');
 var LEVELS = [
     new Level({
         items: new Items(
-            new Elevator({top: 350, left: 0, height: 50, width: 50, isMovingDown: false, isStopped: true}),
-            new Block({top: 0, left: 100, height: 50, width: 50}),
-            new Block({top: 50, left: 50, height: 50, width: 50}),
-            new Block({top: 200, left: 100, height: 50, width: 50}),
-            new Block({top: 250, left: 150, height: 50, width: 100}),
-            new Block({top: 250, left: 250, height: 50, width: 50, isDroppable: true}),
-            new Block({top: 50, left: 250, height: 50, width: 50}),
-            new Elevator({top: 350, left: 300, height: 50, width: 50, isMovingDown: false, isStopped: true}),
-            new Block({top: 350, left: 450, height: 50, width: 50}),
-            new Man({top: 0, left: 150, height: 50, width: 50, isFacingRight: true})
+            new Elevator({top: 7, left: 0, height: 1, width: 1, isMovingDown: false, isStopped: true}),
+            new Block({top: 0, left: 2, height: 1, width: 1}),
+            new Block({top: 1, left: 1, height: 1, width: 1}),
+            new Block({top: 4, left: 2, height: 1, width: 1}),
+            new Block({top: 5, left: 3, height: 1, width: 2}),
+            new Block({top: 5, left: 5, height: 1, width: 1, isDroppable: true}),
+            new Block({top: 1, left: 5, height: 1, width: 1}),
+            new Elevator({top: 7, left: 6, height: 1, width: 1, isMovingDown: false, isStopped: true}),
+            new Block({top: 7, left: 9, height: 1, width: 1}),
+            new Man({top: 0, left: 3, height: 1, width: 1, isFacingRight: true})
         )
     })
 ];

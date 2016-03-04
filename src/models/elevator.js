@@ -1,5 +1,5 @@
 var Item = require('./item');
-var VERTICAL_MOVE_INCREMENT = 1;
+var MAP = require('../constants/map');
 
 function Elevator(data) {
     if (typeof data.isMovingDown !== "boolean") {
@@ -21,9 +21,9 @@ function Elevator(data) {
             throw new Error('Item cannot move vertically.');
         }
         if (this.isMovingDown) {
-            this.top += VERTICAL_MOVE_INCREMENT;
+            this.top += MAP.verticalMoveIncrement;
         } else {
-            this.top -= VERTICAL_MOVE_INCREMENT;
+            this.top -= MAP.verticalMoveIncrement;
         }
         if (this instanceof Elevator && this.enteredItem) { // type check is a hack to avoid changing enetered item
                                                             // when cloning the object (clone is not of Elevator type)

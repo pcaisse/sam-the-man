@@ -2,6 +2,8 @@ var Block = require('../models/block');
 var Man = require('../models/man');
 var Elevator = require('../models/elevator');
 
+var MAP = require('../constants/map');
+
 function Items() {
     this.push.apply(this, arguments);
 
@@ -11,6 +13,10 @@ function Items() {
         if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
             throw new TypeError("Items in level must be of valid types.");
         }
+        // Scale
+        ['top', 'left', 'width', 'height'].forEach(function(measure) {
+            item[measure] *= MAP.unit;
+        });
         // Give unique id
         item.id = count;
         count++;
@@ -27,7 +33,7 @@ Items.prototype.itemCollidesWithItemWhere = function(item, props) {
             return currItem[prop];
         })) {
             return currItem;
-        };
+        }
     })[0];
 };
 

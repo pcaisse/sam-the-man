@@ -1,6 +1,6 @@
 var Item = require('./item');
 var Falls = require('../mixins/falls');
-var WALK_INCREMENT = 2;
+var MAP = require('../constants/map');
 
 function Man(data) {
     if (typeof data.isFacingRight !== "boolean") {
@@ -14,9 +14,9 @@ function Man(data) {
             throw new Error('Item cannot walk.');
         }
         if (this.isFacingRight) {
-            this.left += WALK_INCREMENT;
+            this.left += MAP.walkIncrement;
         } else {
-            this.left -= WALK_INCREMENT;
+            this.left -= MAP.walkIncrement;
         }
     };
 
