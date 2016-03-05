@@ -1,11 +1,13 @@
 var MAP = require('../constants/map');
 
 function Item(data) {
-    [data.top, data.left, data.width, data.height].forEach(function(arg) {
+    [data.top, data.left].forEach(function(arg) {
         if (typeof arg !== "number") {
-            throw new TypeError('Item must have top, left, width, height of all numbers.');
+            throw new TypeError('Item must have top and left of type number.');
         }
     });
+    data.width = 1;
+    data.height = 1;
     Object.assign(this, data);
 
     this.isWithinMapY = function() {
