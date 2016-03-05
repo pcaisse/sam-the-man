@@ -26,6 +26,14 @@ var Level = React.createClass({
 
     updateItem: function(item, index, items) {
         var canContinueToFall = item.canFall && this.canContinueTo('fall', item, items, 'isEnterable');
+        if (item.canWalk) {
+            var droppableItemWalkedOnByItem = items.droppableItemWalkedOnByItem(item);
+            if (droppableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
+                    !canContinueToFall.collisionItem.isSameAs(droppableItemWalkedOnByItem))) {
+                // Item has walked off of droppable item
+                droppableItemWalkedOnByItem.onWalkedOff();
+            }
+        }
         if (item.canFall && !item.isWaiting && canContinueToFall.canContinue) {
             // Item can continue falling
             item.fall();
@@ -35,9 +43,10 @@ var Level = React.createClass({
                 // Tell entered item that it has been entered
                 enterableItemWhichContainsItem.onEntered(item);
             }
-            if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable) {
+            if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable &&
+                    !canContinueToFall.collisionItem.walkingOnItem) {
                 // Item is walking on droppable item
-                canContinueToFall.collisionItem.drop();
+                canContinueToFall.collisionItem.onWalkedOn(item);
             }
             if (!item.isWaiting) {
                 var canContinueToWalk = this.canContinueTo('walk', item, items);

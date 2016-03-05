@@ -45,4 +45,11 @@ Items.prototype.enterableItemWhichContainsItem = function(item) {
     })[0];
 };
 
+Items.prototype.droppableItemWalkedOnByItem = function(item) {
+    return this.filter(function(currItem) {
+        return !item.isSameAs(currItem) && currItem.isDroppable && currItem.walkingOnItem &&
+            currItem.walkingOnItem.isSameAs(item);
+    })[0];
+};
+
 module.exports = Items;

@@ -7,8 +7,15 @@ function Block(data) {
     }
     data.isCollidable = true;
 
-    this.drop = function() {
-        this.canFall = true;
+    this.onWalkedOn = function(item) {
+        this.walkingOnItem = item;
+    };
+
+    this.onWalkedOff = function() {
+        this.walkingOnItem = null;
+        if (this.isDroppable) {
+            this.canFall = true;
+        }
     };
 
     Falls.call(this);
