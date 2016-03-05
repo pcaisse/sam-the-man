@@ -30,6 +30,10 @@ function Item(data) {
     this.hasSamePosition = function(item) {
         return this.top === item.top && this.left === item.left;
     };
+
+    this.isSameAs = function(item) {
+        return this.id === item.id;
+    };
 }
 
 module.exports = Item;

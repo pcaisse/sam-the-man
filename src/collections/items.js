@@ -29,7 +29,7 @@ Items.prototype = Object.create(Array.prototype);
 
 Items.prototype.itemCollidesWithItemWhere = function(item, props) {
     return this.filter(function(currItem) {
-        if (currItem.id !== item.id && item.collidesWith(currItem) && props.some(function(prop) {
+        if (!item.isSameAs(currItem) && item.collidesWith(currItem) && props.some(function(prop) {
             return currItem[prop];
         })) {
             return currItem;
@@ -39,7 +39,7 @@ Items.prototype.itemCollidesWithItemWhere = function(item, props) {
 
 Items.prototype.enterableItemWhichContainsItem = function(item) {
     return this.filter(function(currItem) {
-        if (currItem.id !== item.id && currItem.isEnterable) {
+        if (!item.isSameAs(currItem) && currItem.isEnterable) {
             return item.hasSamePosition(currItem);
         }
     })[0];

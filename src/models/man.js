@@ -21,11 +21,7 @@ function Man(data) {
     };
 
     this.turn = function() {
-        if (this.isFacingRight) {
-            this.isFacingRight = false;
-        } else {
-            this.isFacingRight = true;
-        }
+        this.isFacingRight = !this.isFacingRight;
     };
 
     this.onEnter = function() {
