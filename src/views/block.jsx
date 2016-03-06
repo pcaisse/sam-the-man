@@ -1,6 +1,6 @@
 var React = require('react');
 
-Block = React.createClass({
+var Block = React.createClass({
     bgColor: function() {
         if (this.props.isDroppable) {
             return 'blue';
@@ -9,7 +9,7 @@ Block = React.createClass({
     },
     render: function() {
     	var styles = {
-    		position: 'absolute',
+    		position: this.props.position || 'absolute',
     		top: this.props.top,
     		left: this.props.left,
     		width: this.props.width,
@@ -17,7 +17,7 @@ Block = React.createClass({
             backgroundColor: this.bgColor(),
     	};
         return (
-            <div style={styles} />
+            <div style={styles} {...this.props} />
         );
     }
 });

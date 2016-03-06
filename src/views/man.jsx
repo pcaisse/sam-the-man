@@ -4,7 +4,7 @@ var Man = React.createClass({
     render: function() {
         var backgroundSize = this.props.width + 'px ' + this.props.height + 'px';
     	var styles = {
-    		position: 'absolute',
+            position: this.props.position || 'absolute',
     		top: this.props.top,
     		left: this.props.left,
     		width: this.props.width,
@@ -16,7 +16,7 @@ var Man = React.createClass({
     		styles.transform = 'scaleX(-1)';
     	}
         return (
-            <div style={styles} />
+            <div style={styles} {...this.props} />
         );
     },
 });

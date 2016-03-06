@@ -5,23 +5,10 @@ var Elevator = require('../models/elevator');
 var MAP = require('../constants/map');
 
 function Items() {
-    this.push.apply(this, arguments);
-
-    var count = 0;
-    this.forEach(function(item) {
-        // Validate
-        if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
-            throw new TypeError("Items in level must be of valid types.");
-        }
-        // Scale
-        ['top', 'left', 'width', 'height'].forEach(function(measure) {
-            item[measure] *= MAP.unit;
-        });
-        // Give unique id
-        item.id = count;
-        count++;
-    });
-
+    this.count = 0;
+    for (var i = 0; i < arguments.length; i++) {
+        this.add(arguments[i]);
+    }
     return this;
 }
 
@@ -115,6 +102,27 @@ Items.prototype.canContinueTo = function(itemFuncName, item, items, conditionFun
         canContinue: futureItem.isWithinMapBounds() && !collisionItem,
         collisionItem: collisionItem
     };
+};
+
+Items.prototype.add = function(item) {
+    // Scale
+    ['top', 'left', 'width', 'height'].forEach(function(measure) {
+        item[measure] *= MAP.unit;
+    });
+    // Validate
+    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
+        throw new TypeError('Items in level must be of valid types.');
+    }
+    var isCellTaken = this.some(function(currItem) {
+        return item.collidesWith(currItem);
+    });
+    if (isCellTaken) {
+        throw new TypeError('There is already an item occupying that position.');
+    }
+    // Give unique id
+    item.id = this.count++;
+    // Add item
+    this.push(item);
 };
 
 module.exports = Items;
