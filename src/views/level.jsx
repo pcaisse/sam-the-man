@@ -25,7 +25,10 @@ var Level = React.createClass({
     },
 
     updateItem: function(item, index, items) {
-        var canContinueToFall = item.canFall && this.canContinueTo('fall', item, items, 'isEnterable');
+        var canContinueToFall = item.canFall && this.canContinueTo('fall', item, items,
+            function(currItem, item) {
+                return (currItem.isCollidable && !(currItem.canWalk && item.canWalk)) || currItem.isEnterable;
+            });
         if (item.canWalk) {
             var droppableItemWalkedOnByItem = items.droppableItemWalkedOnByItem(item);
             if (droppableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
@@ -49,7 +52,10 @@ var Level = React.createClass({
                 canContinueToFall.collisionItem.onWalkedOn(item);
             }
             if (!item.isWaiting) {
-                var canContinueToWalk = this.canContinueTo('walk', item, items);
+                var canContinueToWalk = this.canContinueTo('walk', item, items,
+                    function(currItem) {
+                        return currItem.isCollidable && !currItem.canWalk;
+                    });
                 if (canContinueToWalk.canContinue) {
                     // Item can continue walking
                     item.walk();
@@ -62,7 +68,10 @@ var Level = React.createClass({
                 }
             }
         } else if (item.canMoveVertically && !item.isStopped) {
-            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item, items);
+            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item, items,
+                function(currItem, item) {
+                    return currItem.isCollidable && !item.enteredItem.isSameAs(currItem);
+                });
             if (canContinueToMoveVertically.canContinue) {
                 // Item can continue to move vertically
                 item.moveVertically();
@@ -72,17 +81,12 @@ var Level = React.createClass({
         }
     },
 
-    canContinueTo: function(funcName, item, items, extraProps) {
-        // By default, cannot continue action if item will collide with a collidable item
-        var props = ['isCollidable'];
-        if (extraProps) {
-            props = props.concat(extraProps);
-        }
+    canContinueTo: function(itemFuncName, item, items, conditionFunc) {
         // Clone item and put it in its future state to see if it is valid
         var futureItem = Object.assign({}, item);
-        futureItem[funcName].call(futureItem);
+        futureItem[itemFuncName].call(futureItem);
         // Perform checks
-        var collisionItem = items.itemCollidesWithItemWhere(futureItem, props);
+        var collisionItem = items.itemCollidesWithItemWhere(futureItem, conditionFunc);
         return {
             canContinue: futureItem.isWithinMapBounds() && !collisionItem,
             collisionItem: collisionItem

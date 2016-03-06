@@ -27,21 +27,15 @@ function Items() {
 
 Items.prototype = Object.create(Array.prototype);
 
-Items.prototype.itemCollidesWithItemWhere = function(item, props) {
+Items.prototype.itemCollidesWithItemWhere = function(item, conditionFunc) {
     return this.filter(function(currItem) {
-        if (!item.isSameAs(currItem) && item.collidesWith(currItem) && props.some(function(prop) {
-            return currItem[prop];
-        })) {
-            return currItem;
-        }
+        return !item.isSameAs(currItem) && item.collidesWith(currItem) && conditionFunc(currItem, item);
     })[0];
 };
 
 Items.prototype.enterableItemWhichContainsItem = function(item) {
     return this.filter(function(currItem) {
-        if (!item.isSameAs(currItem) && currItem.isEnterable) {
-            return item.hasSamePosition(currItem);
-        }
+        return !item.isSameAs(currItem) && currItem.isEnterable && item.hasSamePosition(currItem);
     })[0];
 };
 

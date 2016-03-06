@@ -8,6 +8,7 @@ function Man(data) {
     }
     data.canWalk = true;
     data.canFall = true;
+    data.isCollidable = true;
 
     this.walk = function() {
         if (!this.canWalk) {

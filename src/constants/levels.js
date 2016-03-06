@@ -19,7 +19,9 @@ var LEVELS = [
             new Block({top: 1, left: 5}),
             new Elevator({top: 7, left: 6, isMovingDown: false, isStopped: true}),
             new Block({top: 7, left: 9}),
-            new Man({top: 0, left: 3, isFacingRight: true})
+            new Man({top: 3, left: 3, isFacingRight: true}),
+            new Man({top: 4, left: 3, isFacingRight: true}),
+            new Man({top: 7, left: 1, isFacingRight: true})
         )
     })
 ];
