@@ -1,10 +1,17 @@
 var React = require('react');
+var Router = require('react-router').Router;
+var Route = require('react-router').Route;
+var hashHistory = require('react-router').hashHistory;
+
+var Splash = require('./views/splash.jsx');
+var App = require('./views/app.jsx');
 
 React.initializeTouchEvents(true);
 
-var App = require('./views/app.jsx');
-
 React.render(
-    <App />, 
+    <Router history={hashHistory}>
+        <Route path="/" component={Splash}/>
+        <Route path="/level/:currLevel" component={App}/>
+    </Router>,
     document.getElementById('main')
 );

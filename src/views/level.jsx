@@ -9,7 +9,8 @@ var Level = React.createClass({
 
     getInitialState: function() {
         return {
-            items: this.props.items
+            items: this.props.items,
+            isPaused: true
         };
     },
 
