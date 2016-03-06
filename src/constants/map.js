@@ -9,7 +9,8 @@ var fallIncrement = findFallIncrement(unit);
 
 function findMinDimension(value) {
     while (value) {
-        if (value % X === 0 && value % Y === 0) {
+        if (value % X === 0 && value % Y === 0 &&
+                (value / Y) % 2 === 0 && (value / X) % 2 === 0) { // Even numbers make for more appropriate fallIncrement
             return value;
         }
         value--;
@@ -17,7 +18,7 @@ function findMinDimension(value) {
 }
 
 function findFallIncrement(unit) {
-    var increment = 5;
+    var increment = Math.min(4, parseInt(unit / 8)); // Max value keeps speed from getting too fast at small dimensions
     while (increment) {
         if (unit % increment === 0) {
             return increment;
