@@ -15,14 +15,18 @@ var Level = React.createClass({
     },
 
     componentDidMount: function() {
-        window.requestAnimationFrame(this.update);
+        this._animationRequestId = window.requestAnimationFrame(this.update);
+    },
+
+    componentWillUnmount: function() {
+        window.cancelAnimationFrame(this._animationRequestId);
     },
 
     update: function() {
         var items = this.state.items;
         items.forEach(this.updateItem);
         this.setState(items);
-        window.requestAnimationFrame(this.update);
+        this._animationRequestId = window.requestAnimationFrame(this.update);
     },
 
     updateItem: function(item, index, items) {
