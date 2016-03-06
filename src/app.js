@@ -11,7 +11,8 @@ React.initializeTouchEvents(true);
 React.render(
     <Router history={hashHistory}>
         <Route path="/" component={Splash}/>
-        <Route path="/level/:currLevel" component={App}/>
+        <Route path="level" component={App}/>
+        <Route path="level/:currLevel" component={App}/>
     </Router>,
     document.getElementById('main')
 );

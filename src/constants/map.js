@@ -1,4 +1,7 @@
-// Map is a 12x8 grid
+// Map is a 12x8 grid.
+// Dimensions must be evenly divisible by the rows/cols in the grid
+// and the grid cells must also be evenly divisible by movement increments (falling, walking, etc).
+// Otherwise we get floating point issues.
 var X = 12;
 var Y = 8;
 
@@ -18,7 +21,7 @@ function findMinDimension(value) {
 }
 
 function findFallIncrement(unit) {
-    var increment = Math.min(4, parseInt(unit / 8)); // Max value keeps speed from getting too fast at small dimensions
+    var increment = Math.min(6, parseInt(unit / 8)); // Max value keeps speed from getting too fast at small dimensions
     while (increment) {
         if (unit % increment === 0) {
             return increment;
