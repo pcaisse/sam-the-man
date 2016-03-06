@@ -46,4 +46,75 @@ Items.prototype.droppableItemWalkedOnByItem = function(item) {
     })[0];
 };
 
+Items.prototype.update = function() {
+    this.forEach(function(item, index, items) {
+        var canContinueToFall = item.canFall && this.canContinueTo('fall', item, items,
+            function(currItem, item) {
+                return (currItem.isCollidable && !(currItem.canWalk && item.canWalk)) || currItem.isEnterable;
+            });
+        if (item.canWalk) {
+            var droppableItemWalkedOnByItem = items.droppableItemWalkedOnByItem(item);
+            if (droppableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
+                    !canContinueToFall.collisionItem.isSameAs(droppableItemWalkedOnByItem))) {
+                // Item has walked off of droppable item
+                droppableItemWalkedOnByItem.onWalkedOff();
+            }
+        }
+        if (item.canFall && !item.isWaiting && canContinueToFall.canContinue) {
+            // Item can continue falling
+            item.fall();
+        } else if (item.canWalk && !item.isWaiting) {
+            var enterableItemWhichContainsItem = items.enterableItemWhichContainsItem(item);
+            if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
+                // Tell entered item that it has been entered
+                enterableItemWhichContainsItem.onEntered(item);
+            }
+            if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable &&
+                    !canContinueToFall.collisionItem.walkingOnItem) {
+                // Item is walking on droppable item
+                canContinueToFall.collisionItem.onWalkedOn(item);
+            }
+            if (!item.isWaiting) {
+                var canContinueToWalk = this.canContinueTo('walk', item, items,
+                    function(currItem) {
+                        return currItem.isCollidable && !currItem.canWalk;
+                    });
+                if (canContinueToWalk.canContinue) {
+                    // Item can continue walking
+                    item.walk();
+                    if (enterableItemWhichContainsItem && enterableItemWhichContainsItem.isUnloading) {
+                        // Tell entered item that contained item has exited
+                        enterableItemWhichContainsItem.onExited();
+                    }
+                } else {
+                    item.turn();
+                }
+            }
+        } else if (item.canMoveVertically && !item.isStopped) {
+            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item, items,
+                function(currItem, item) {
+                    return currItem.isCollidable && !item.enteredItem.isSameAs(currItem);
+                });
+            if (canContinueToMoveVertically.canContinue) {
+                // Item can continue to move vertically
+                item.moveVertically();
+            } else {
+                item.stop();
+            }
+        }
+    }.bind(this));
+};
+
+Items.prototype.canContinueTo = function(itemFuncName, item, items, conditionFunc) {
+    // Clone item and put it in its future state to see if it is valid
+    var futureItem = Object.assign({}, item);
+    futureItem[itemFuncName].call(futureItem);
+    // Perform checks
+    var collisionItem = items.itemCollidesWithItemWhere(futureItem, conditionFunc);
+    return {
+        canContinue: futureItem.isWithinMapBounds() && !collisionItem,
+        collisionItem: collisionItem
+    };
+};
+
 module.exports = Items;

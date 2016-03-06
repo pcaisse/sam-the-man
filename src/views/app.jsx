@@ -13,9 +13,10 @@ var App = React.createClass({
         };
         var currLevel = this.props.params.currLevel || 0;
         var items = LEVELS[currLevel].items;
+        var inventory = LEVELS[currLevel].inventory;
         return (
             <div style={styles}>
-                <Level items={items} map={MAP_DATA} />
+                <Level items={items} map={MAP_DATA} inventory={inventory} />
             </div> 
         );
     }

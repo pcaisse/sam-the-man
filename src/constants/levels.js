@@ -19,7 +19,11 @@ var LEVELS = [
             new Elevator({top: 7, left: 6, isMovingDown: false, isStopped: true}),
             new Block({top: 7, left: 9}),
             new Man({top: 4, left: 3, isFacingRight: true})
-        )
+        ),
+        inventory: {
+            Block: 1,
+            Elevator: 1
+        }
     })
 ];
 
