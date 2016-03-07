@@ -2,6 +2,7 @@ var React = require('react');
 var Man = require('./man.jsx');
 var Block = require('./block.jsx');
 var Elevator = require('./elevator.jsx');
+var Inventory = require('./inventory.jsx');
 var ItemPreview = require('./preview.jsx');
 
 var models = require('../models');
@@ -32,49 +33,6 @@ var Level = React.createClass({
 
     pause: function() {
         window.cancelAnimationFrame(this._animationRequestId);
-    },
-
-    inventory: function() {
-        var styles = {
-            width: '20%',
-            position: 'absolute',
-            top: '25%',
-            left: '65%',
-            padding: parseInt(MAP.unit / 5),
-            backgroundColor: '#fff',
-            border: '1px solid black'
-        };
-        var inventory = this.state.inventory;
-        var blocks = utils.filterByType(inventory, models.Block);
-        var men = utils.filterByType(inventory, models.Man);
-        var elevators = utils.filterByType(inventory, models.Elevator);
-        var inventoryItems = [blocks, men, elevators].map(function(itemTypes, index) {
-            if (!itemTypes.length) {
-                return null;
-            }
-            var itemType = itemTypes[0];
-            var Component = utils.modelToComponent(itemType);
-            return (
-                <span>
-                    <Component
-                        key={itemType}
-                        width={MAP.unit}
-                        height={MAP.unit}
-                        position='relative'
-                        onDragStart={function(event) {
-                            event.dataTransfer.setData('modelName', itemType.name);
-                        }}
-                        draggable={true} />
-                    <span>x {itemTypes.length}</span>
-                </span>
-            );
-        }.bind(this));
-        return (
-            <div style={styles}>
-                <div>Inventory</div>
-                {inventoryItems}
-            </div>
-        );
     },
 
     updateItems: function() {
@@ -140,7 +98,7 @@ var Level = React.createClass({
             width: this.props.map.width,
             height: this.props.map.height,
         };
-        var inventory = this.state.isPlacementMode ? this.inventory() : null;
+        var inventory = this.state.isPlacementMode ? <Inventory inventory={this.state.inventory} /> : null;
         var placementPreviewItem = this.state.isPlacementMode ? <ItemPreview ref='preview' /> : null;
         return (
             <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
