@@ -6,6 +6,7 @@ var ItemPreview = require('./preview.jsx');
 
 var models = require('../models');
 var MAP = require('../constants/map');
+var utils = require('../utils');
 
 var Level = React.createClass({
 
@@ -33,12 +34,6 @@ var Level = React.createClass({
         window.cancelAnimationFrame(this._animationRequestId);
     },
 
-    filterByType: function(types, type) {
-        return types.filter(function(currType) {
-            return currType === type;
-        });
-    },
-
     inventory: function() {
         var styles = {
             width: '20%',
@@ -50,15 +45,15 @@ var Level = React.createClass({
             border: '1px solid black'
         };
         var inventory = this.state.inventory;
-        var blocks = this.filterByType(inventory, models.Block);
-        var men = this.filterByType(inventory, models.Man);
-        var elevators = this.filterByType(inventory, models.Elevator);
+        var blocks = utils.filterByType(inventory, models.Block);
+        var men = utils.filterByType(inventory, models.Man);
+        var elevators = utils.filterByType(inventory, models.Elevator);
         var inventoryItems = [blocks, men, elevators].map(function(itemTypes, index) {
             if (!itemTypes.length) {
                 return null;
             }
             var itemType = itemTypes[0];
-            var Component = this.modelToComponent(itemType);
+            var Component = utils.modelToComponent(itemType);
             return (
                 <span>
                     <Component
@@ -89,48 +84,18 @@ var Level = React.createClass({
         this._animationRequestId = window.requestAnimationFrame(this.updateItems);
     },
 
-    modelToComponent: function(model) {
-        if (model === models.Block) {
-            return Block;
-        }
-        if (model === models.Elevator) {
-            return Elevator;
-        }
-        if (model === models.Man) {
-            return Man;
-        }
-        return null;
-    },
-
-    modelsToComponents: function(model) {
-        var Component = this.modelToComponent(model);
-        return this.props.items.filter(function(item) {
-            return item instanceof model;
-        }).map(function(item, index) {
-            return <Component key={index} {...item} />;
-        });
-    },
-
-    findCell: function(dimension) {
-        return parseInt(dimension / MAP.unit);
-    },
-
-    snapToGrid: function(dimension) {
-        return this.findCell(dimension) * MAP.unit;
-    },
-
     handleDragOver: function(event) {
         // Only allow placement within grid
         event.preventDefault();
         var placementPreviewItem = React.findDOMNode(this.refs.preview);
         placementPreviewItem.style.visibility = 'visible';
-        placementPreviewItem.style.left = this.snapToGrid(event.clientX) + 'px';
-        placementPreviewItem.style.top = this.snapToGrid(event.clientY) + 'px';
+        placementPreviewItem.style.left = utils.snapToGrid(event.clientX) + 'px';
+        placementPreviewItem.style.top = utils.snapToGrid(event.clientY) + 'px';
     },
 
     handleDrop: function(event) {
-        var left = this.findCell(event.clientX);
-        var top = this.findCell(event.clientY);
+        var left = utils.findCell(event.clientX);
+        var top = utils.findCell(event.clientY);
         var model = models[event.dataTransfer.getData('modelName')];
         var item = new model({
             top: top,
@@ -158,6 +123,15 @@ var Level = React.createClass({
         } finally {
             React.findDOMNode(this.refs.preview).style.visibility = 'hidden';
         }
+    },
+
+    modelsToComponents: function(model) {
+        var Component = utils.modelToComponent(model);
+        return this.props.items.filter(function(item) {
+            return item instanceof model;
+        }).map(function(item, index) {
+            return <Component key={index} {...item} />;
+        });
     },
 
     render: function() {
