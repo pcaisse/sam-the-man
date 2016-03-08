@@ -15,7 +15,8 @@ var Level = React.createClass({
         return {
             items: this.props.items,
             inventory: this.props.inventory,
-            isPlacementMode: true
+            isPlacementMode: true,
+            preview: null
         };
     },
 
@@ -43,12 +44,13 @@ var Level = React.createClass({
     },
 
     handleDragOver: function(event) {
-        // Only allow placement within grid
         event.preventDefault();
-        var placementPreviewItem = React.findDOMNode(this.refs.preview);
-        placementPreviewItem.style.visibility = 'visible';
-        placementPreviewItem.style.left = utils.snapToGrid(event.clientX) + 'px';
-        placementPreviewItem.style.top = utils.snapToGrid(event.clientY) + 'px';
+        var preview = {
+            visibility: 'visible',
+            left: utils.snapToGrid(event.clientX) + 'px',
+            top: utils.snapToGrid(event.clientY) + 'px'
+        };
+        this.setState({preview: preview});
     },
 
     handleDrop: function(event) {
@@ -59,6 +61,12 @@ var Level = React.createClass({
             top: top,
             left: left
         });
+        // Whatever happens, hide preview after drop
+        var newState = {
+            preview: {
+                visibility: 'hidden'
+            }
+        };
         try {
             var items = this.state.items;
             var inventory = this.state.inventory;
@@ -71,15 +79,13 @@ var Level = React.createClass({
                 return !isSameType || (isSameType && itemOfTypeFoundCount > 1);
             });
             // Update state
-            this.setState({
-                items: items,
-                inventory: inventory,
-                isPlacementMode: inventory.length > 0
-            });
+            newState.items = items;
+            newState.inventory = inventory;
+            newState.isPlacementMode = inventory.length > 0;
         } catch (e) {
             // Adding of item failed, presumably due to that cell being taken
         } finally {
-            React.findDOMNode(this.refs.preview).style.visibility = 'hidden';
+            this.setState(newState);
         }
     },
 
@@ -99,7 +105,7 @@ var Level = React.createClass({
             height: this.props.map.height,
         };
         var inventory = this.state.isPlacementMode ? <Inventory inventory={this.state.inventory} /> : null;
-        var placementPreviewItem = this.state.isPlacementMode ? <ItemPreview ref='preview' /> : null;
+        var placementPreviewItem = this.state.isPlacementMode ? <ItemPreview {...this.state.preview} /> : null;
         return (
             <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
                 {this.modelsToComponents(models.Man)}
