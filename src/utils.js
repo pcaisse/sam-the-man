@@ -31,5 +31,9 @@ module.exports = {
 
     snapToGrid: function(dimension) {
         return this.findCell(dimension) * MAP.unit;
+    },
+
+    clone: function(obj) {
+        return Object.assign({}, obj);
     }
 };

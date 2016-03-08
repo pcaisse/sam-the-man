@@ -19,10 +19,12 @@ function Man(data) {
         } else {
             this.left -= MAP.walkIncrement;
         }
+        return this;
     };
 
     this.turn = function() {
         this.isFacingRight = !this.isFacingRight;
+        return this;
     };
 
     this.onEnter = function() {

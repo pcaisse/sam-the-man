@@ -3,6 +3,23 @@ var Man = require('../models/man');
 var Elevator = require('../models/elevator');
 
 var MAP = require('../constants/map');
+var utils = require('../utils');
+
+/**
+ * Used to tell if the item can continue its current action (walking, falling, etc).
+ * @type {Object.<string, function>}
+ */
+var CAN_CONTINUE_FUNCS = {
+    fall: function(currItem, item) {
+        return (currItem.isCollidable && !(currItem.canWalk && item.canWalk)) || currItem.isEnterable;
+    },
+    walk: function(currItem) {
+        return currItem.isCollidable && !currItem.canWalk;
+    },
+    moveVertically: function(currItem, item) {
+        return currItem.isCollidable && !item.enteredItem.isSameAs(currItem);
+    }
+};
 
 function Items() {
     this.count = 0;
@@ -13,6 +30,31 @@ function Items() {
 }
 
 Items.prototype = Object.create(Array.prototype);
+
+/**
+ * Instead of pushing items onto the array, they are added so that checks and mutations can occur before pushing.
+ * @param {Object} item Item to be added.
+ */
+Items.prototype.add = function(item) {
+    // Scale
+    ['top', 'left', 'width', 'height'].forEach(function(measure) {
+        item[measure] *= MAP.unit;
+    });
+    // Validate
+    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
+        throw new TypeError('Items in level must be of valid types.');
+    }
+    var isCellTaken = this.some(function(currItem) {
+        return item.collidesWith(currItem);
+    });
+    if (isCellTaken) {
+        throw new TypeError('There is already an item occupying that position.');
+    }
+    // Give unique id
+    item.id = this.count++;
+    // Add item
+    this.push(item);
+};
 
 Items.prototype.itemCollidesWithItemWhere = function(item, conditionFunc) {
     return this.filter(function(currItem) {
@@ -33,14 +75,15 @@ Items.prototype.droppableItemWalkedOnByItem = function(item) {
     })[0];
 };
 
+/**
+ * Update all items in collection based on their properties, current state, and relation to one another.
+ * NB: This is where the magic happens!
+ */
 Items.prototype.update = function() {
-    this.forEach(function(item, index, items) {
-        var canContinueToFall = item.canFall && this.canContinueTo('fall', item, items,
-            function(currItem, item) {
-                return (currItem.isCollidable && !(currItem.canWalk && item.canWalk)) || currItem.isEnterable;
-            });
+    this.forEach(function(item) {
+        var canContinueToFall = item.canFall && this.canContinueTo('fall', item);
         if (item.canWalk) {
-            var droppableItemWalkedOnByItem = items.droppableItemWalkedOnByItem(item);
+            var droppableItemWalkedOnByItem = this.droppableItemWalkedOnByItem(item);
             if (droppableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
                     !canContinueToFall.collisionItem.isSameAs(droppableItemWalkedOnByItem))) {
                 // Item has walked off of droppable item
@@ -51,7 +94,7 @@ Items.prototype.update = function() {
             // Item can continue falling
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
-            var enterableItemWhichContainsItem = items.enterableItemWhichContainsItem(item);
+            var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item);
             if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
                 // Tell entered item that it has been entered
                 enterableItemWhichContainsItem.onEntered(item);
@@ -62,10 +105,7 @@ Items.prototype.update = function() {
                 canContinueToFall.collisionItem.onWalkedOn(item);
             }
             if (!item.isWaiting) {
-                var canContinueToWalk = this.canContinueTo('walk', item, items,
-                    function(currItem) {
-                        return currItem.isCollidable && !currItem.canWalk;
-                    });
+                var canContinueToWalk = this.canContinueTo('walk', item);
                 if (canContinueToWalk.canContinue) {
                     // Item can continue walking
                     item.walk();
@@ -74,14 +114,17 @@ Items.prototype.update = function() {
                         enterableItemWhichContainsItem.onExited();
                     }
                 } else {
-                    item.turn();
+                    var flippedItem = utils.clone(item).turn();
+                    var canContinueToWalkOtherDirection = this.canContinueTo('walk', flippedItem);
+                    // Only turn if there's somewhere to go
+                    // This avoids non-stop flipping if the item is stuck
+                    if (canContinueToWalkOtherDirection.canContinue) {
+                        item.turn();
+                    }
                 }
             }
         } else if (item.canMoveVertically && !item.isStopped) {
-            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item, items,
-                function(currItem, item) {
-                    return currItem.isCollidable && !item.enteredItem.isSameAs(currItem);
-                });
+            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item);
             if (canContinueToMoveVertically.canContinue) {
                 // Item can continue to move vertically
                 item.moveVertically();
@@ -92,37 +135,22 @@ Items.prototype.update = function() {
     }.bind(this));
 };
 
-Items.prototype.canContinueTo = function(itemFuncName, item, items, conditionFunc) {
+/**
+ * Check if the item can continue its current action (walking, falling, etc).
+ * @param  {string} funcName Name of function to be called.
+ * @param  {Object} item Item in question.
+ * @return {Object} Contains result of check and collision item, if any.
+ */
+Items.prototype.canContinueTo = function(funcName, item) {
     // Clone item and put it in its future state to see if it is valid
-    var futureItem = Object.assign({}, item);
-    futureItem[itemFuncName].call(futureItem);
+    var futureItem = utils.clone(item);
+    futureItem[funcName].call(futureItem);
     // Perform checks
-    var collisionItem = items.itemCollidesWithItemWhere(futureItem, conditionFunc);
+    var collisionItem = this.itemCollidesWithItemWhere(futureItem, CAN_CONTINUE_FUNCS[funcName]);
     return {
         canContinue: futureItem.isWithinMapBounds() && !collisionItem,
         collisionItem: collisionItem
     };
-};
-
-Items.prototype.add = function(item) {
-    // Scale
-    ['top', 'left', 'width', 'height'].forEach(function(measure) {
-        item[measure] *= MAP.unit;
-    });
-    // Validate
-    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
-        throw new TypeError('Items in level must be of valid types.');
-    }
-    var isCellTaken = this.some(function(currItem) {
-        return item.collidesWith(currItem);
-    });
-    if (isCellTaken) {
-        throw new TypeError('There is already an item occupying that position.');
-    }
-    // Give unique id
-    item.id = this.count++;
-    // Add item
-    this.push(item);
 };
 
 module.exports = Items;

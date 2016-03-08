@@ -29,6 +29,7 @@ function Elevator(data) {
                                                             // when cloning the object (clone is not of Elevator type)
             this.enteredItem.top = this.top;
         }
+        return this;
     };
 
     this.onEntered = function(enteredItem) {
@@ -41,6 +42,7 @@ function Elevator(data) {
         this.enteredItem.onStop();
         this.isStopped = true;
         this.isUnloading = true;
+        return this;
     };
 
     this.onExited = function() {
