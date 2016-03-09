@@ -62,6 +62,7 @@ var Level = React.createClass({
 
     handleDragOver: function(event) {
         event.preventDefault();
+        // Snap preview to grid
         var preview = {
             visibility: 'visible',
             left: utils.snapToGrid(event.clientX) + 'px',
@@ -71,8 +72,8 @@ var Level = React.createClass({
     },
 
     handleDrop: function(event) {
-        var left = utils.findCell(event.clientX);
-        var top = utils.findCell(event.clientY);
+        var left = utils.findCellIndex(event.clientX);
+        var top = utils.findCellIndex(event.clientY);
         var model = models[event.dataTransfer.getData('modelName')];
         var item = new model({
             top: top,
@@ -89,12 +90,7 @@ var Level = React.createClass({
             var inventory = this.state.inventory;
             items.add(item);
             // Remove one item of this type
-            var itemOfTypeFoundCount = 0;
-            inventory = inventory.filter(function(currItem) {
-                var isSameType = item.constructor === currItem;
-                itemOfTypeFoundCount++;
-                return !isSameType || (isSameType && itemOfTypeFoundCount > 1);
-            });
+            inventory.removeOneOfType(item.constructor);
             // Update state
             newState.items = items;
             newState.inventory = inventory;

@@ -1,4 +1,5 @@
 var Items = require('../collections/items');
+var Inventory = require('../collections/inventory');
 
 var Block = require('../models/items/block');
 var Elevator = require('../models/items/elevator');
@@ -22,7 +23,7 @@ var LEVELS = [
             new Man({top: 4, left: 3, isFacingRight: true}),
             new Goal({top: 0, left: 1})
         ),
-        inventory: [Block, Block]
+        inventory: new Inventory(Block, Block)
     })
 ];
 

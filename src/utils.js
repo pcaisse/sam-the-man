@@ -25,12 +25,12 @@ module.exports = {
         });
     },
 
-    findCell: function(dimension) {
+    findCellIndex: function(dimension) {
         return parseInt(dimension / MAP.unit);
     },
 
     snapToGrid: function(dimension) {
-        return this.findCell(dimension) * MAP.unit;
+        return this.findCellIndex(dimension) * MAP.unit;
     },
 
     clone: function(obj) {
