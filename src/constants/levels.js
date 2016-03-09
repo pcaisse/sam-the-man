@@ -4,6 +4,7 @@ var Block = require('../models/block');
 var Elevator = require('../models/elevator');
 var Level = require('../models/level');
 var Man = require('../models/man');
+var Goal = require('../models/goal');
 
 var LEVELS = [
     new Level({
@@ -18,7 +19,8 @@ var LEVELS = [
             new Block({top: 1, left: 5}),
             new Elevator({top: 7, left: 6, isMovingDown: false, isStopped: true}),
             new Block({top: 7, left: 9}),
-            new Man({top: 4, left: 3, isFacingRight: true})
+            new Man({top: 4, left: 3, isFacingRight: true}),
+            new Goal({top: 0, left: 1})
         ),
         inventory: [Block, Block]
     })

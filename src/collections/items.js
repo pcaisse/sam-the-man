@@ -1,6 +1,7 @@
 var Block = require('../models/block');
 var Man = require('../models/man');
 var Elevator = require('../models/elevator');
+var Goal = require('../models/goal');
 
 var MAP = require('../constants/map');
 var utils = require('../utils');
@@ -41,7 +42,7 @@ Items.prototype.add = function(item) {
         item[measure] *= MAP.unit;
     });
     // Validate
-    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man)) {
+    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man) && !(item instanceof Goal)) {
         throw new TypeError('Items in level must be of valid types.');
     }
     var isCellTaken = this.some(function(currItem) {
@@ -68,11 +69,25 @@ Items.prototype.enterableItemWhichContainsItem = function(item) {
     })[0];
 };
 
+Items.prototype.acheivableItemWhichContainsItem = function(item) {
+    return this.filter(function(currItem) {
+        return !item.isSameAs(currItem) && currItem.isAchievable && item.hasSamePosition(currItem);
+    })[0];
+};
+
 Items.prototype.droppableItemWalkedOnByItem = function(item) {
     return this.filter(function(currItem) {
         return !item.isSameAs(currItem) && currItem.isDroppable && currItem.walkingOnItem &&
             currItem.walkingOnItem.isSameAs(item);
     })[0];
+};
+
+Items.prototype.isGoalAchieved = function() {
+    return this.filter(function(currItem) {
+        return currItem.isAchievable;
+    }).every(function(achievableItem) {
+        return achievableItem.isAchieved;
+    });
 };
 
 /**
@@ -94,32 +109,38 @@ Items.prototype.update = function() {
             // Item can continue falling
             item.fall();
         } else if (item.canWalk && !item.isWaiting) {
-            var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item);
-            if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
-                // Tell entered item that it has been entered
-                enterableItemWhichContainsItem.onEntered(item);
-            }
-            if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable &&
-                    !canContinueToFall.collisionItem.walkingOnItem) {
-                // Item is walking on droppable item
-                canContinueToFall.collisionItem.onWalkedOn(item);
-            }
-            if (!item.isWaiting) {
-                var canContinueToWalk = this.canContinueTo('walk', item);
-                if (canContinueToWalk.canContinue) {
-                    // Item can continue walking
-                    item.walk();
-                    if (enterableItemWhichContainsItem && enterableItemWhichContainsItem.isUnloading) {
-                        // Tell entered item that contained item has exited
-                        enterableItemWhichContainsItem.onExited();
-                    }
-                } else {
-                    var flippedItem = utils.clone(item).turn();
-                    var canContinueToWalkOtherDirection = this.canContinueTo('walk', flippedItem);
-                    // Only turn if there's somewhere to go
-                    // This avoids non-stop flipping if the item is stuck
-                    if (canContinueToWalkOtherDirection.canContinue) {
-                        item.turn();
+            var acheivableItemWhichContainsItem = this.acheivableItemWhichContainsItem(item);
+            if (acheivableItemWhichContainsItem) {
+                // Item has achieved the goal!
+                acheivableItemWhichContainsItem.onAchieved();
+            } else {
+                var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item);
+                if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
+                    // Tell entered item that it has been entered
+                    enterableItemWhichContainsItem.onEntered(item);
+                }
+                if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable &&
+                        !canContinueToFall.collisionItem.walkingOnItem) {
+                    // Item is walking on droppable item
+                    canContinueToFall.collisionItem.onWalkedOn(item);
+                }
+                if (!item.isWaiting) {
+                    var canContinueToWalk = this.canContinueTo('walk', item);
+                    if (canContinueToWalk.canContinue) {
+                        // Item can continue walking
+                        item.walk();
+                        if (enterableItemWhichContainsItem && enterableItemWhichContainsItem.isUnloading) {
+                            // Tell entered item that contained item has exited
+                            enterableItemWhichContainsItem.onExited();
+                        }
+                    } else {
+                        var flippedItem = utils.clone(item).turn();
+                        var canContinueToWalkOtherDirection = this.canContinueTo('walk', flippedItem);
+                        // Only turn if there's somewhere to go
+                        // This avoids non-stop flipping if the item is stuck
+                        if (canContinueToWalkOtherDirection.canContinue) {
+                            item.turn();
+                        }
                     }
                 }
             }

@@ -1,6 +1,7 @@
 var Man = require('./views/man.jsx');
 var Block = require('./views/block.jsx');
 var Elevator = require('./views/elevator.jsx');
+var Goal = require('./views/goal.jsx');
 
 var models = require('./models');
 var MAP = require('./constants/map');
@@ -15,6 +16,9 @@ module.exports = {
         }
         if (model === models.Man) {
             return Man;
+        }
+        if (model === models.Goal) {
+            return Goal;
         }
         return null;
     },

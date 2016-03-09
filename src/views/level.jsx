@@ -4,11 +4,19 @@ var Block = require('./block.jsx');
 var Elevator = require('./elevator.jsx');
 var Inventory = require('./inventory.jsx');
 var ItemPreview = require('./preview.jsx');
+var Goal = require('./goal.jsx');
+var Modal = require('./modal.jsx');
 
 var models = require('../models');
 var MAP = require('../constants/map');
 var utils = require('../utils');
 
+/*
+TODO:
+-Make inventory draggable within map
+-Allow inventory items to be moved/returned to inventory if placed erroneously
+-Fix dimension bug on mobile/tablet
+ */
 var Level = React.createClass({
 
     getInitialState: function() {
@@ -16,31 +24,38 @@ var Level = React.createClass({
             items: this.props.items,
             inventory: this.props.inventory,
             isPlacementMode: true,
-            preview: null
+            preview: null,
+            isComplete: false
         };
     },
 
     componentWillUpdate: function(nextProps, nextState) {
         if (this.state.isPlacementMode && !nextState.isPlacementMode) {
+            // Just left placement mode, so time to start the show...
             this.play();
         }
     },
 
-    componentWillUnmount: this.pause,
+    componentWillUnmount: this.cancel,
 
     play: function() {
         this._animationRequestId = window.requestAnimationFrame(this.updateItems);
     },
 
-    pause: function() {
+    cancel: function() {
         window.cancelAnimationFrame(this._animationRequestId);
     },
 
     updateItems: function() {
-        var items = this.state.items;
-        items.update();
-        this.setState(items);
-        this._animationRequestId = window.requestAnimationFrame(this.updateItems);
+        if (!this.state.isComplete) {
+            var items = this.state.items;
+            items.update();
+            this.setState({
+                items: items,
+                isComplete: items.isGoalAchieved()
+            });
+            this._animationRequestId = window.requestAnimationFrame(this.updateItems);
+        }
     },
 
     handleDragOver: function(event) {
@@ -106,13 +121,17 @@ var Level = React.createClass({
         };
         var inventory = this.state.isPlacementMode ? <Inventory inventory={this.state.inventory} /> : null;
         var placementPreviewItem = this.state.isPlacementMode ? <ItemPreview {...this.state.preview} /> : null;
+        var levelComplete = this.state.isComplete ?
+            <Modal text="Level Complete!" nextLevel={++this.props.currLevel} /> : null;
         return (
             <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
                 {this.modelsToComponents(models.Man)}
                 {this.modelsToComponents(models.Block)}
                 {this.modelsToComponents(models.Elevator)}
+                {this.modelsToComponents(models.Goal)}
                 {inventory}
                 {placementPreviewItem}
+                {levelComplete}
             </div> 
         );
     },
