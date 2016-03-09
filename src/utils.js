@@ -1,24 +1,20 @@
-var Man = require('./views/man.jsx');
-var Block = require('./views/block.jsx');
-var Elevator = require('./views/elevator.jsx');
-var Goal = require('./views/goal.jsx');
-
-var models = require('./models');
+var models = require('./models/items');
+var views = require('./views/items');
 var MAP = require('./constants/map');
 
 module.exports = {
     modelToComponent: function(model) {
         if (model === models.Block) {
-            return Block;
+            return views.Block;
         }
         if (model === models.Elevator) {
-            return Elevator;
+            return views.Elevator;
         }
         if (model === models.Man) {
-            return Man;
+            return views.Man;
         }
         if (model === models.Goal) {
-            return Goal;
+            return views.Goal;
         }
         return null;
     },

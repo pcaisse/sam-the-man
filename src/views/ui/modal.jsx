@@ -1,7 +1,7 @@
 var React = require('react');
 var Link = require('react-router').Link;
 
-var MAP = require('../constants/map');
+var MAP = require('../../constants/map');
 
 var Modal = React.createClass({
     render: function() {

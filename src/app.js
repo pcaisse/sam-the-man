@@ -3,7 +3,7 @@ var Router = require('react-router').Router;
 var Route = require('react-router').Route;
 var hashHistory = require('react-router').hashHistory;
 
-var Splash = require('./views/splash.jsx');
+var Splash = require('./views/ui/splash.jsx');
 var App = require('./views/app.jsx');
 
 React.initializeTouchEvents(true);

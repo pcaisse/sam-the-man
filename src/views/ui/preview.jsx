@@ -1,5 +1,5 @@
 var React = require('react');
-var MAP = require('../constants/map');
+var MAP = require('../../constants/map');
 
 var ItemPreview = React.createClass({
     render: function() {

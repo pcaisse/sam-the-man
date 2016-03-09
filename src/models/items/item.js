@@ -1,4 +1,4 @@
-var MAP = require('../constants/map');
+var MAP = require('../../constants/map');
 
 function Item(data) {
     [data.top, data.left].forEach(function(arg) {

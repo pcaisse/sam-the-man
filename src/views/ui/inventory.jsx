@@ -1,8 +1,8 @@
 var React = require('react');
 
-var models = require('../models');
-var MAP = require('../constants/map');
-var utils = require('../utils');
+var models = require('../../models/items');
+var MAP = require('../../constants/map');
+var utils = require('../../utils');
 
 var Inventory = React.createClass({
     render: function() {

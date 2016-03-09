@@ -1,5 +1,5 @@
 var Item = require('./item');
-var Falls = require('../mixins/falls');
+var Falls = require('../../mixins/falls');
 
 function Block(data) {
     if (data.isDroppable && typeof data.isDroppable !== "boolean") {

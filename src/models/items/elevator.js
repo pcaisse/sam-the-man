@@ -1,5 +1,5 @@
 var Item = require('./item');
-var MAP = require('../constants/map');
+var MAP = require('../../constants/map');
 
 function Elevator(data) {
     if (typeof data.isMovingDown !== "boolean") {

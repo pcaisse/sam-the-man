@@ -1,10 +1,10 @@
 var Items = require('../collections/items');
 
-var Block = require('../models/block');
-var Elevator = require('../models/elevator');
+var Block = require('../models/items/block');
+var Elevator = require('../models/items/elevator');
 var Level = require('../models/level');
-var Man = require('../models/man');
-var Goal = require('../models/goal');
+var Man = require('../models/items/man');
+var Goal = require('../models/items/goal');
 
 var LEVELS = [
     new Level({

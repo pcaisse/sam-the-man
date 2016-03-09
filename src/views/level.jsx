@@ -1,13 +1,15 @@
 var React = require('react');
-var Man = require('./man.jsx');
-var Block = require('./block.jsx');
-var Elevator = require('./elevator.jsx');
-var Inventory = require('./inventory.jsx');
-var ItemPreview = require('./preview.jsx');
-var Goal = require('./goal.jsx');
-var Modal = require('./modal.jsx');
 
-var models = require('../models');
+var Man = require('./items/man.jsx');
+var Block = require('./items/block.jsx');
+var Elevator = require('./items/elevator.jsx');
+var Goal = require('./items/goal.jsx');
+
+var Inventory = require('./ui/inventory.jsx');
+var ItemPreview = require('./ui/preview.jsx');
+var Modal = require('./ui/modal.jsx');
+
+var models = require('../models/items');
 var MAP = require('../constants/map');
 var utils = require('../utils');
 

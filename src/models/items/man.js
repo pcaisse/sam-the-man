@@ -1,6 +1,6 @@
 var Item = require('./item');
-var Falls = require('../mixins/falls');
-var MAP = require('../constants/map');
+var Falls = require('../../mixins/falls');
+var MAP = require('../../constants/map');
 
 function Man(data) {
     if (typeof data.isFacingRight !== "boolean") {

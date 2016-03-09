@@ -1,7 +1,7 @@
-var Block = require('../models/block');
-var Man = require('../models/man');
-var Elevator = require('../models/elevator');
-var Goal = require('../models/goal');
+var Block = require('../models/items/block');
+var Man = require('../models/items/man');
+var Elevator = require('../models/items/elevator');
+var Goal = require('../models/items/goal');
 
 var MAP = require('../constants/map');
 var utils = require('../utils');
