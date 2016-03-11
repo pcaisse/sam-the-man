@@ -57,6 +57,15 @@ Items.prototype.add = function(item) {
     this.push(item);
 };
 
+Items.prototype.remove = function(id) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].id === parseInt(id)) {
+            this.splice(i, 1);
+            return;
+        }
+    }
+};
+
 Items.prototype.itemCollidesWithItemWhere = function(item, conditionFunc) {
     return this.filter(function(currItem) {
         return !item.isSameAs(currItem) && item.collidesWith(currItem) && conditionFunc(currItem, item);

@@ -75,10 +75,7 @@ var Level = React.createClass({
         var left = utils.findCellIndex(event.clientX);
         var top = utils.findCellIndex(event.clientY);
         var model = models[event.dataTransfer.getData('modelName')];
-        var item = new model({
-            top: top,
-            left: left
-        });
+        var itemId = event.dataTransfer.getData('id'); // Item has been re-dragged
         // Whatever happens, hide preview after drop
         var newState = {
             preview: {
@@ -87,16 +84,29 @@ var Level = React.createClass({
         };
         try {
             var items = this.state.items;
-            var inventory = this.state.inventory;
-            items.add(item);
-            // Remove one item of this type
-            inventory.removeOneOfType(item.constructor);
-            // Update state
+            var item = new model({
+                top: top,
+                left: left,
+                isInventoryItem: true
+            });
+            items.add(item); // this may fail if placed in taken cell
+            if (itemId) {
+                // Item was re-dragged
+                // Delete old item
+                items.remove(itemId);
+            }
             newState.items = items;
-            newState.inventory = inventory;
-            newState.isPlacementMode = inventory.length > 0;
+            // Remove one item of this type
+            // only on initial drag
+            if (!itemId) {
+                var inventory = this.state.inventory;
+                inventory.removeOneOfType(item.constructor);
+                newState.inventory = inventory;
+                newState.isPlacementMode = inventory.length > 0;
+            }
         } catch (e) {
             // Adding of item failed, presumably due to that cell being taken
+            // TODO: Catch errors
         } finally {
             this.setState(newState);
         }
@@ -107,7 +117,15 @@ var Level = React.createClass({
         return this.props.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
-            return <Component key={index} {...item} />;
+            var props = item; // TODO: Remove unneeded props
+            if (item.isInventoryItem) {
+                props.onDragStart = function(event) {
+                    // Used to identify the item on potential re-drag
+                    event.dataTransfer.setData('id', item.id);
+                    event.dataTransfer.setData('modelName', item.constructor.name);
+                };
+            }
+            return <Component key={index} {...props} />;
         });
     },
 
