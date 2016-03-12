@@ -119,6 +119,7 @@ var Level = React.createClass({
         }).map(function(item, index) {
             var props = item; // TODO: Remove unneeded props
             if (item.isInventoryItem) {
+                props.draggable = true;
                 props.onDragStart = function(event) {
                     // Used to identify the item on potential re-drag
                     event.dataTransfer.setData('id', item.id);
