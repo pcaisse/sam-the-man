@@ -1,4 +1,5 @@
 var React = require('react');
+var Item = require('./item.jsx');
 
 var Goal = React.createClass({
     render: function() {
@@ -11,7 +12,7 @@ var Goal = React.createClass({
             boxShadow: 'inset 0px 0px 0px 1px green'
         };
         return (
-            <div style={styles} {...this.props} />
+            <Item style={styles} {...this.props} />
         );
     }
 });

@@ -117,7 +117,7 @@ var Level = React.createClass({
         return this.props.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
-            var props = item; // TODO: Remove unneeded props
+            var props = utils.clone(item);
             if (item.isInventoryItem) {
                 props.draggable = true;
                 props.onDragStart = function(event) {

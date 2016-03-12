@@ -1,4 +1,5 @@
 var React = require('react');
+var Item = require('./item.jsx');
 
 var Man = React.createClass({
     render: function() {
@@ -16,7 +17,7 @@ var Man = React.createClass({
     		styles.transform = 'scaleX(-1)';
     	}
         return (
-            <div style={styles} {...this.props} />
+            <Item style={styles} {...this.props} />
         );
     },
 });

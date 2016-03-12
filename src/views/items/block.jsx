@@ -1,4 +1,5 @@
 var React = require('react');
+var Item = require('./item.jsx');
 
 var Block = React.createClass({
     bgColor: function() {
@@ -17,7 +18,7 @@ var Block = React.createClass({
             backgroundColor: this.bgColor(),
     	};
         return (
-            <div style={styles} {...this.props} />
+            <Item style={styles} {...this.props} />
         );
     }
 });
