@@ -7,7 +7,6 @@ var ItemPreview = React.createClass({
             width: MAP.unit,
             height: MAP.unit,
             backgroundColor: 'red',
-            visibility: this.props.visibility || 'hidden',
             opacity: 0.8,
             position: 'absolute',
             top: this.props.top,

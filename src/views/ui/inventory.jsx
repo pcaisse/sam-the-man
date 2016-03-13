@@ -43,6 +43,8 @@ var Inventory = React.createClass({
         var blocks = utils.filterByType(inventory, models.Block);
         var men = utils.filterByType(inventory, models.Man);
         var elevators = utils.filterByType(inventory, models.Elevator);
+        var onDragStart = this.props.onDragStart;
+        var onDragEnd = this.props.onDragEnd;
         var inventoryItems = [blocks, men, elevators].filter(function(itemTypes) {
                 return itemTypes.length;
             }).map(function(itemTypes) {
@@ -56,9 +58,9 @@ var Inventory = React.createClass({
                             height={MAP.unit}
                             position='relative'
                             onDragStart={function(event) {
-                                // Used to identify the type of item (Block vs Man vs Elevator)
-                                event.dataTransfer.setData('modelName', itemType.name);
+                                onDragStart(event, itemType);
                             }}
+                            onDragEnd={onDragEnd}
                             draggable={true} />
                         <span>x {itemTypes.length}</span>
                     </span>

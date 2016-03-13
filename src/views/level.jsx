@@ -68,15 +68,29 @@ var Level = React.createClass({
         }
     },
 
+    handleDragStart: function(event, itemType) {
+        // Used to identify the type of item (Block vs Man vs Elevator)
+        event.dataTransfer.setData('modelName', itemType.name);
+    },
+
+    handleRedragStart: function(event, item) {
+        // Used to identify the item on re-drag
+        event.dataTransfer.setData('id', item.id);
+        event.dataTransfer.setData('modelName', item.constructor.name);
+    },
+
     handleDragOver: function(event) {
         event.preventDefault();
         // Snap preview to grid
         var preview = {
-            visibility: 'visible',
             left: utils.snapToGrid(event.clientX) + 'px',
             top: utils.snapToGrid(event.clientY) + 'px'
         };
         this.setState({preview: preview});
+    },
+
+    handleDragEnd: function(event) {
+        this.setState({preview: null});
     },
 
     handleDrop: function(event) {
@@ -86,9 +100,7 @@ var Level = React.createClass({
         var itemId = event.dataTransfer.getData('id'); // Item has been re-dragged
         // Whatever happens, hide preview after drop
         var newState = {
-            preview: {
-                visibility: 'hidden'
-            }
+            preview: null
         };
         try {
             var items = this.state.items;
@@ -122,6 +134,8 @@ var Level = React.createClass({
 
     modelsToComponents: function(model) {
         var Component = utils.modelToComponent(model);
+        var handleRedragStart = this.handleRedragStart;
+        var handleDragEnd = this.handleDragEnd;
         return this.state.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
@@ -129,10 +143,9 @@ var Level = React.createClass({
             if (item.isInventoryItem) {
                 props.draggable = true;
                 props.onDragStart = function(event) {
-                    // Used to identify the item on potential re-drag
-                    event.dataTransfer.setData('id', item.id);
-                    event.dataTransfer.setData('modelName', item.constructor.name);
+                    handleRedragStart(event, item);
                 };
+                props.onDragEnd = handleDragEnd;
             }
             return <Component key={index} {...props} />;
         });
@@ -149,7 +162,7 @@ var Level = React.createClass({
             backgroundColor: '#e4e4e4',
             flex: 'auto'
         };
-        var placementPreviewItem = <ItemPreview {...this.state.preview} />;
+        var placementPreviewItem = this.state.preview ? <ItemPreview {...this.state.preview} /> : null;
         var levelComplete = this.state.isComplete ?
             <Modal text="Level Complete!" nextLevel={++this.props.currLevel} /> : null;
         return (
@@ -168,6 +181,8 @@ var Level = React.createClass({
                     onReset={this.reset}
                     allItemsPlaced={this.state.allItemsPlaced}
                     isPlacementMode={this.state.isPlacementMode}
+                    onDragStart={this.handleDragStart}
+                    onDragEnd={this.handleDragEnd}
                 />
             </div>
         );
