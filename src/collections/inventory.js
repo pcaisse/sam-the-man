@@ -32,4 +32,12 @@ Inventory.prototype.add = function(itemType) {
     this.push(itemType);
 };
 
+Inventory.prototype.copy = function() {
+    var itemTypes = this.map(function(itemType) {
+        return itemType;
+    });
+    itemTypes.unshift(null);
+    return new (Function.prototype.bind.apply(Inventory, itemTypes));
+};
+
 module.exports = Inventory;

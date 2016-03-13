@@ -183,4 +183,13 @@ Items.prototype.canContinueTo = function(funcName, item) {
     };
 };
 
+Items.prototype.copy = function() {
+    var items = this.map(function(item) {
+        var type = item.constructor;
+        return new type(item._data);
+    });
+    items.unshift(null);
+    return new (Function.prototype.bind.apply(Items, items));
+};
+
 module.exports = Items;

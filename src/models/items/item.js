@@ -6,8 +6,9 @@ function Item(data) {
             throw new TypeError('Item must have top and left of type number.');
         }
     });
-    data.width = 1;
-    data.height = 1;
+    this.width = 1;
+    this.height = 1;
+    this._data = data;
     Object.assign(this, data);
 
     this.isWithinMapY = function() {

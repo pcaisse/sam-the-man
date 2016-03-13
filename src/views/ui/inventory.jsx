@@ -5,7 +5,17 @@ var MAP = require('../../constants/map');
 var utils = require('../../utils');
 
 var Inventory = React.createClass({
+    goButton: function() {
+        if (!this.props.allItemsPlaced) {
+            return null;
+        }
+        if (this.props.isPlacementMode) {
+            return <button onClick={this.props.onStart}>Go!</button>;
+        }
+        return <button onClick={this.props.onReset}>Reset</button>;
+    },
     render: function() {
+        // TODO: Refactor this function
         var width = MAP.appWidth - MAP.width;
         var height = MAP.height;
         var borderThickness = 1;
@@ -59,6 +69,7 @@ var Inventory = React.createClass({
                 <div style={styles}>
                     <div style={headingStyles}>Inventory</div>
                     {inventoryItems}
+                    {this.goButton()}
                 </div>
             </div>
         );

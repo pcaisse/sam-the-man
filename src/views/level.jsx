@@ -15,16 +15,15 @@ var utils = require('../utils');
 
 /*
 TODO:
--Make inventory draggable within map
--Allow inventory items to be moved/returned to inventory if placed erroneously
 -Fix dimension bug on mobile/tablet
  */
 var Level = React.createClass({
 
     getInitialState: function() {
         return {
-            items: this.props.items,
-            inventory: this.props.inventory,
+            items: this.props.items.copy(),
+            inventory: this.props.inventory.copy(),
+            allItemsPlaced: false,
             isPlacementMode: true,
             preview: null,
             isComplete: false
@@ -38,13 +37,22 @@ var Level = React.createClass({
         }
     },
 
-    componentWillUnmount: this.cancel,
+    componentWillUnmount: this.stop,
+
+    start: function() {
+        this.setState({isPlacementMode: false});
+    },
+
+    reset: function() {
+        this.stop();
+        this.setState(this.getInitialState());
+    },
 
     play: function() {
         this._animationRequestId = window.requestAnimationFrame(this.updateItems);
     },
 
-    cancel: function() {
+    stop: function() {
         window.cancelAnimationFrame(this._animationRequestId);
     },
 
@@ -102,7 +110,7 @@ var Level = React.createClass({
                 var inventory = this.state.inventory;
                 inventory.removeOneOfType(item.constructor);
                 newState.inventory = inventory;
-                newState.isPlacementMode = inventory.length > 0;
+                newState.allItemsPlaced = inventory.length === 0;
             }
         } catch (e) {
             // Adding of item failed, presumably due to that cell being taken
@@ -114,7 +122,7 @@ var Level = React.createClass({
 
     modelsToComponents: function(model) {
         var Component = utils.modelToComponent(model);
-        return this.props.items.filter(function(item) {
+        return this.state.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
             var props = utils.clone(item);
@@ -141,7 +149,7 @@ var Level = React.createClass({
             backgroundColor: '#e4e4e4',
             flex: 'auto'
         };
-        var placementPreviewItem = this.state.isPlacementMode ? <ItemPreview {...this.state.preview} /> : null;
+        var placementPreviewItem = <ItemPreview {...this.state.preview} />;
         var levelComplete = this.state.isComplete ?
             <Modal text="Level Complete!" nextLevel={++this.props.currLevel} /> : null;
         return (
@@ -154,7 +162,13 @@ var Level = React.createClass({
                     {placementPreviewItem}
                     {levelComplete}
                 </div>
-                <Inventory inventory={this.state.inventory} />
+                <Inventory
+                    inventory={this.state.inventory}
+                    onStart={this.start}
+                    onReset={this.reset}
+                    allItemsPlaced={this.state.allItemsPlaced}
+                    isPlacementMode={this.state.isPlacementMode}
+                />
             </div>
         );
     },
