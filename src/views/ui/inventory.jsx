@@ -6,14 +6,28 @@ var utils = require('../../utils');
 
 var Inventory = React.createClass({
     render: function() {
+        var width = MAP.appWidth - MAP.width;
+        var height = MAP.height;
+        var borderThickness = 1;
+        var border = borderThickness + 'px solid black';
+        var containerStyles = {
+            width: width,
+            height: height 
+        };
+        var paddingPercentOfHeight = 0.04;
+        var padding = height * paddingPercentOfHeight;
+        var innerHeight = height * (1 - paddingPercentOfHeight * 2) - (borderThickness * 2);
         var styles = {
-            width: '20%',
-            position: 'absolute',
-            top: '25%',
-            left: '65%',
-            padding: parseInt(MAP.unit / 5),
+            padding: padding,
             backgroundColor: '#fff',
-            border: '1px solid black'
+            border: border,
+            height: innerHeight
+        };
+        var headingStyles = {
+            overflow: 'hidden',
+            fontWeight: 'bold',
+            fontFamily: 'Courier New',
+            wordWrap: 'break-word'
         };
         var inventory = this.props.inventory;
         var blocks = utils.filterByType(inventory, models.Block);
@@ -41,9 +55,11 @@ var Inventory = React.createClass({
                 );
             }.bind(this));
         return (
-            <div style={styles}>
-                <div>Inventory</div>
-                {inventoryItems}
+            <div style={containerStyles}>
+                <div style={styles}>
+                    <div style={headingStyles}>Inventory</div>
+                    {inventoryItems}
+                </div>
             </div>
         );
     }

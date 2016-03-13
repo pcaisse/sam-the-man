@@ -131,25 +131,31 @@ var Level = React.createClass({
     },
 
     render: function() {
+        var containerStyles = {
+            display: 'flex'
+        };
         var styles = {
             position: 'relative',
             width: this.props.map.width,
             height: this.props.map.height,
+            backgroundColor: '#e4e4e4',
+            flex: 'auto'
         };
-        var inventory = this.state.isPlacementMode ? <Inventory inventory={this.state.inventory} /> : null;
         var placementPreviewItem = this.state.isPlacementMode ? <ItemPreview {...this.state.preview} /> : null;
         var levelComplete = this.state.isComplete ?
             <Modal text="Level Complete!" nextLevel={++this.props.currLevel} /> : null;
         return (
-            <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
-                {this.modelsToComponents(models.Man)}
-                {this.modelsToComponents(models.Block)}
-                {this.modelsToComponents(models.Elevator)}
-                {this.modelsToComponents(models.Goal)}
-                {inventory}
-                {placementPreviewItem}
-                {levelComplete}
-            </div> 
+            <div style={containerStyles}>
+                <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
+                    {this.modelsToComponents(models.Man)}
+                    {this.modelsToComponents(models.Block)}
+                    {this.modelsToComponents(models.Elevator)}
+                    {this.modelsToComponents(models.Goal)}
+                    {placementPreviewItem}
+                    {levelComplete}
+                </div>
+                <Inventory inventory={this.state.inventory} />
+            </div>
         );
     },
 });

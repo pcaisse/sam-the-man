@@ -7,9 +7,7 @@ var LEVELS = require('../constants/levels');
 var App = React.createClass({
     render: function() {
         var styles = {
-            width: MAP.width,
-            height: MAP.height,
-            backgroundColor: '#e4e4e4'
+            width: MAP.appWidth
         };
         var currLevel = this.props.params.currLevel || 0;
         var items = LEVELS[currLevel].items;

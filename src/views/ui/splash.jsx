@@ -7,14 +7,14 @@ var SplashScreen = React.createClass({
     render: function() {
         var styles = {
             backgroundColor: 'lightblue',
-            width: MAP.width,
+            width: MAP.appWidth,
             height: MAP.height
         };
         var titleStyles = {
             margin: '0 auto',
             width: 150,
             textAlign: 'center',
-            fontFamily: "'Courier New',Courier,monospace",
+            fontFamily: "Courier New",
             position: 'relative',
             top: '50%',
             transform: 'translateY(-50%)'
