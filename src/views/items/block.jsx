@@ -11,10 +11,6 @@ var Block = React.createClass({
     render: function() {
     	var styles = {
     		position: this.props.position || 'absolute',
-    		top: this.props.top,
-    		left: this.props.left,
-    		width: this.props.width,
-			height: this.props.height,
             backgroundColor: this.bgColor(),
     	};
         return (

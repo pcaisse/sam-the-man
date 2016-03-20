@@ -15,11 +15,7 @@ function Man(data) {
         if (!this.canWalk) {
             throw new Error('Item cannot walk.');
         }
-        if (this.isFacingRight) {
-            this.left += MAP.walkIncrement;
-        } else {
-            this.left -= MAP.walkIncrement;
-        }
+        this.move(MAP.MOVEMENTS.WALK);
         return this;
     };
 

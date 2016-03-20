@@ -2,7 +2,7 @@ var React = require('react');
 
 var models = require('../../models/items');
 var MAP = require('../../constants/map');
-var utils = require('../../utils');
+var modelViewUtils = require('../../utils/modelView');
 
 var Inventory = React.createClass({
     goButton: function() {
@@ -40,22 +40,23 @@ var Inventory = React.createClass({
             wordWrap: 'break-word'
         };
         var inventory = this.props.inventory;
-        var blocks = utils.filterByType(inventory, models.Block);
-        var men = utils.filterByType(inventory, models.Man);
-        var elevators = utils.filterByType(inventory, models.Elevator);
+        var blocks = inventory.filterByType(models.Block);
+        var men = inventory.filterByType(models.Man);
+        var elevators = inventory.filterByType(models.Elevator);
         var onDragStart = this.props.onDragStart;
         var onDragEnd = this.props.onDragEnd;
         var inventoryItems = [blocks, men, elevators].filter(function(itemTypes) {
                 return itemTypes.length;
             }).map(function(itemTypes) {
                 var itemType = itemTypes[0];
-                var Component = utils.modelToComponent(itemType);
+                var Component = modelViewUtils.modelToComponent(itemType);
                 return (
                     <span key={'wrapper' + itemType.name}>
                         <Component
                             key={itemType.name}
                             width={MAP.unit}
                             height={MAP.unit}
+                            isInInventory={true}
                             position='relative'
                             onDragStart={function(event) {
                                 onDragStart(event, itemType);

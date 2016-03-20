@@ -1,16 +1,16 @@
 var React = require('react');
-var MAP = require('../../constants/map');
+var mapUtils = require('../../utils/map');
 
 var ItemPreview = React.createClass({
     render: function() {
         var styles = {
-            width: MAP.unit,
-            height: MAP.unit,
+            width: mapUtils.scaleToMap(1),
+            height: mapUtils.scaleToMap(1),
             backgroundColor: 'red',
             opacity: 0.8,
             position: 'absolute',
-            top: this.props.top,
-            left: this.props.left
+            top: mapUtils.scaleToMap(this.props.top),
+            left: mapUtils.scaleToMap(this.props.left)
         };
         return <div style={styles} />;
     }

@@ -1,4 +1,5 @@
 var MAP = require('../../constants/map');
+var mapUtils = require('../../utils/map');
 
 function Item(data) {
     [data.top, data.left].forEach(function(arg) {
@@ -8,15 +9,78 @@ function Item(data) {
     });
     this.width = 1;
     this.height = 1;
+    this.topFraction = 0;
+    this.leftFraction = 0;
     this._data = data;
     Object.assign(this, data);
 
+    this.move = function(movement) {
+        var adjustLeft = false;
+        var adjustTop = false;
+        // Adjust position fraction
+        if (movement === MAP.MOVEMENTS.FALL) {
+            this.topFraction += MAP.FALLS_PER_CELL;
+            adjustTop = true;
+        } else if (movement === MAP.MOVEMENTS.WALK) {
+            if (this.isFacingRight) {
+                this.leftFraction += MAP.WALKS_PER_CELL;
+            } else {
+                this.leftFraction -= MAP.WALKS_PER_CELL;
+            }
+            adjustLeft = true;
+        } else if (movement === MAP.MOVEMENTS.MOVE_VERTICALLY) {
+            if (this.isMovingDown) {
+                this.topFraction += MAP.VERTICAL_MOVEMENTS_PER_CELL;
+            } else {
+                this.topFraction -= MAP.VERTICAL_MOVEMENTS_PER_CELL;
+            }
+            adjustTop = true;
+        }
+        // Change position as needed based on fraction
+        if (adjustTop) {
+            if (this.topFraction > 0 && this.topFraction % MAP.MOVEMENTS_PER_CELL === 0) {
+                this.top += 1;
+                this.topFraction = 0;
+            }
+            if (this.topFraction < 0) {
+                this.top -= 1;
+                this.topFraction += MAP.MOVEMENTS_PER_CELL;
+            }
+        }
+        if (adjustLeft) {
+            if (this.leftFraction > 0 && this.leftFraction % MAP.MOVEMENTS_PER_CELL === 0) {
+                this.left += 1;
+                this.leftFraction = 0;
+            }
+            if (this.leftFraction < 0) {
+                this.left -= 1;
+                this.leftFraction += MAP.MOVEMENTS_PER_CELL;
+            }
+        }
+    };
+
+    this.scaledWidth = function() {
+        return mapUtils.scaleToMap(this.width);
+    };
+
+    this.scaledHeight = function() {
+        return mapUtils.scaleToMap(this.height);
+    };
+
+    this.scaledTop = function() {
+        return mapUtils.scaleToMap(this.top) + mapUtils.scaleToMap(this.topFraction / MAP.MOVEMENTS_PER_CELL);
+    };
+
+    this.scaledLeft = function() {
+        return mapUtils.scaleToMap(this.left) + mapUtils.scaleToMap(this.leftFraction / MAP.MOVEMENTS_PER_CELL);
+    };
+
     this.isWithinMapY = function() {
-        return this.top >= 0 && this.top <= MAP.height - this.height;
+        return this.scaledTop() >= 0 && this.scaledTop() <= MAP.height - this.scaledHeight();
     };
 
     this.isWithinMapX = function() {
-        return this.left >= 0 && this.left <= MAP.width - this.width;
+        return this.scaledLeft() >= 0 && this.scaledLeft() <= MAP.width - this.scaledWidth();
     };
 
     this.isWithinMapBounds = function() {
@@ -24,14 +88,14 @@ function Item(data) {
     };
 
     this.collidesWith = function(item) {
-        return this.left < item.left + item.width &&
-            this.left + this.width > item.left &&
-            this.top < item.top + item.height &&
-            this.height + this.top > item.top;
+        return this.scaledLeft() < item.scaledLeft() + item.scaledWidth() &&
+            this.scaledLeft() + this.scaledWidth() > item.scaledLeft() &&
+            this.scaledTop() < item.scaledTop() + item.scaledHeight() &&
+            this.scaledHeight() + this.scaledTop() > item.scaledTop();
     };
 
     this.hasSamePosition = function(item) {
-        return this.top === item.top && this.left === item.left;
+        return this.scaledTop() === item.scaledTop() && this.scaledLeft() === item.scaledLeft();
     };
 
     this.isSameAs = function(item) {

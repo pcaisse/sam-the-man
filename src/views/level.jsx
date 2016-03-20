@@ -11,7 +11,9 @@ var Modal = require('./ui/modal.jsx');
 
 var models = require('../models/items');
 var MAP = require('../constants/map');
-var utils = require('../utils');
+var utils = require('../utils/utils');
+var mapUtils = require('../utils/map');
+var modelViewUtils = require('../utils/modelView');
 
 /*
 TODO:
@@ -83,8 +85,8 @@ var Level = React.createClass({
         event.preventDefault();
         // Snap preview to grid
         var preview = {
-            left: utils.snapToGrid(event.clientX) + 'px',
-            top: utils.snapToGrid(event.clientY) + 'px'
+            left: mapUtils.findCellIndex(event.clientX),
+            top: mapUtils.findCellIndex(event.clientY)
         };
         this.setState({preview: preview});
     },
@@ -94,8 +96,8 @@ var Level = React.createClass({
     },
 
     handleDrop: function(event) {
-        var left = utils.findCellIndex(event.clientX);
-        var top = utils.findCellIndex(event.clientY);
+        var left = mapUtils.findCellIndex(event.clientX);
+        var top = mapUtils.findCellIndex(event.clientY);
         var model = models[event.dataTransfer.getData('modelName')];
         var itemId = event.dataTransfer.getData('id'); // Item has been re-dragged
         // Whatever happens, hide preview after drop
@@ -133,7 +135,7 @@ var Level = React.createClass({
     },
 
     modelsToComponents: function(model) {
-        var Component = utils.modelToComponent(model);
+        var Component = modelViewUtils.modelToComponent(model);
         var handleRedragStart = this.handleRedragStart;
         var handleDragEnd = this.handleDragEnd;
         return this.state.items.filter(function(item) {

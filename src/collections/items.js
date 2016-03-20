@@ -4,7 +4,7 @@ var Elevator = require('../models/items/elevator');
 var Goal = require('../models/items/goal');
 
 var MAP = require('../constants/map');
-var utils = require('../utils');
+var utils = require('../utils/utils');
 
 /**
  * Used to tell if the item can continue its current action (walking, falling, etc).
@@ -37,10 +37,6 @@ Items.prototype = Object.create(Array.prototype);
  * @param {Object} item Item to be added.
  */
 Items.prototype.add = function(item) {
-    // Scale
-    ['top', 'left', 'width', 'height'].forEach(function(measure) {
-        item[measure] *= MAP.unit;
-    });
     // Validate
     if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man) && !(item instanceof Goal)) {
         throw new TypeError('Items in level must be of valid types.');

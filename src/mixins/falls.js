@@ -5,7 +5,7 @@ function Falls() {
         if (!this.canFall) {
             throw new Error('Item cannot fall.');
         }
-        this.top += MAP.fallIncrement;
+        this.move(MAP.MOVEMENTS.FALL);
     };
 }
 

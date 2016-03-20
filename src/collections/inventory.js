@@ -3,8 +3,6 @@ var Man = require('../models/items/man');
 var Elevator = require('../models/items/elevator');
 var Goal = require('../models/items/goal');
 
-var utils = require('../utils');
-
 function Inventory() {
 
     this.removeOneOfType = function(itemType) {
@@ -38,6 +36,12 @@ Inventory.prototype.copy = function() {
     });
     itemTypes.unshift(null);
     return new (Function.prototype.bind.apply(Inventory, itemTypes));
+};
+
+Inventory.prototype.filterByType = function(type) {
+    return this.filter(function(currType) {
+        return currType === type;
+    });
 };
 
 module.exports = Inventory;
