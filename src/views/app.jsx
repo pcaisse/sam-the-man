@@ -9,12 +9,16 @@ var App = React.createClass({
         var styles = {
             width: MAP.appWidth
         };
-        var currLevel = this.props.params.currLevel || 0;
-        var items = LEVELS[currLevel].items;
-        var inventory = LEVELS[currLevel].inventory;
+        var currLevelIndex = this.props.params.currLevel || 0;
+        var currLevel = LEVELS[currLevelIndex];
+        if (!currLevel) {
+            throw new Error('Level not implemented');
+        }
+        var items = currLevel.items;
+        var inventory = currLevel.inventory;
         return (
             <div style={styles}>
-                <Level items={items} map={MAP} inventory={inventory} currLevel={currLevel} />
+                <Level items={items} map={MAP} inventory={inventory} currLevel={currLevelIndex} />
             </div> 
         );
     }
