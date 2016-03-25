@@ -75,7 +75,7 @@ var Level = React.createClass({
 
     handleTouchStart: function(event, itemType) {
         event.preventDefault();
-        this._dragData.modelName = itemType;
+        this.startDragTouch(itemType);
     },
 
     handleTouchMove: function(event) {
@@ -104,11 +104,17 @@ var Level = React.createClass({
     },
 
     handleDragStart: function(event, itemType) {
+        this.startDragTouch(itemType);
+    },
+
+    startDragTouch: function(itemType) {
+        // Clear out drag data
+        this._dragData = {};
         // Used to identify the type of item (Block vs Man vs Elevator)
         this._dragData.modelName = itemType;
     },
 
-    handleRedragStart: function(event, item) {
+    setItemData: function(item) {
         // Used to identify the item on re-drag
         this._dragData.itemId = item.id;
         this._dragData.modelName = item.constructor;
@@ -182,8 +188,10 @@ var Level = React.createClass({
 
     modelsToComponents: function(model) {
         var Component = modelViewUtils.modelToComponent(model);
-        var handleRedragStart = this.handleRedragStart;
+        var setItemData = this.setItemData;
         var handleDragEnd = this.handleDragEnd;
+        var handleTouchEnd = this.handleTouchEnd;
+        var handleTouchMove = this.handleTouchMove;
         return this.state.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
@@ -191,9 +199,14 @@ var Level = React.createClass({
             if (item.isInventoryItem) {
                 props.draggable = true;
                 props.onDragStart = function(event) {
-                    handleRedragStart(event, item);
+                    setItemData(item);
                 };
                 props.onDragEnd = handleDragEnd;
+                props.onTouchStart = function(event) {
+                    setItemData(item);
+                };
+                props.onTouchMove = handleTouchMove;
+                props.onTouchEnd = handleTouchEnd;
             }
             return <Component key={index} {...props} />;
         });
