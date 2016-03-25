@@ -87,11 +87,27 @@ function Item(data) {
         return this.isWithinMapX() && this.isWithinMapY();
     };
 
+    this.fractionLeft = function() {
+        return mapUtils.asFraction(this.left) + this.leftFraction;
+    };
+
+    this.fractionTop = function() {
+        return mapUtils.asFraction(this.top) + this.topFraction;
+    };
+
+    this.fractionWidth = function() {
+        return mapUtils.asFraction(this.width);
+    };
+
+    this.fractionHeight = function() {
+        return mapUtils.asFraction(this.height);
+    };
+
     this.collidesWith = function(item) {
-        return this.scaledLeft() < item.scaledLeft() + item.scaledWidth() &&
-            this.scaledLeft() + this.scaledWidth() > item.scaledLeft() &&
-            this.scaledTop() < item.scaledTop() + item.scaledHeight() &&
-            this.scaledHeight() + this.scaledTop() > item.scaledTop();
+        return this.fractionLeft() < item.fractionLeft() + item.fractionWidth() &&
+            this.fractionLeft() + this.fractionWidth() > item.fractionLeft() &&
+            this.fractionTop() < item.fractionTop() + item.fractionHeight() &&
+            this.fractionHeight() + this.fractionTop() > item.fractionTop();
     };
 
     this.hasSamePosition = function(item) {
