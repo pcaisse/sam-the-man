@@ -15,20 +15,18 @@ var utils = require('../utils/utils');
 var mapUtils = require('../utils/map');
 var modelViewUtils = require('../utils/modelView');
 
-/*
-TODO:
--Fix dimension bug on mobile/tablet
- */
 var Level = React.createClass({
+
+    _dragData: {},
 
     getInitialState: function() {
         return {
-            items: this.props.items.copy(),
-            inventory: this.props.inventory.copy(),
             allItemsPlaced: false,
+            inventory: this.props.inventory.copy(),
+            isComplete: false,
             isPlacementMode: true,
-            preview: null,
-            isComplete: false
+            items: this.props.items.copy(),
+            preview: null
         };
     },
 
@@ -70,36 +68,70 @@ var Level = React.createClass({
         }
     },
 
+    isOnMap: function(x, y) {
+        return mapUtils.findCellIndex(x) >= 0 && mapUtils.findCellIndex(x) < MAP.X &&
+            mapUtils.findCellIndex(y) >= 0 && mapUtils.findCellIndex(y) < MAP.Y;
+    },
+
+    handleTouchStart: function(event, itemType) {
+        event.preventDefault();
+        this._dragData.modelName = itemType;
+    },
+
+    handleTouchMove: function(event) {
+        event.preventDefault();
+        if (event.targetTouches.length === 1) {
+            // There's exactly one finger inside this element
+            var touch = event.targetTouches[0];
+            if (this.isOnMap(touch.pageX, touch.pageY)) {
+                this.snapPreviewToGrid(touch.pageX, touch.pageY);
+            } else {
+                this.hidePreview();
+            }
+        }
+    },
+
+    handleTouchEnd: function(event) {
+        event.preventDefault();
+        if (event.changedTouches.length === 1) {
+            var touch = event.changedTouches[0];
+            if (this.isOnMap(touch.pageX, touch.pageY)) {
+                this.placeItem(touch.pageX, touch.pageY);
+            } else {
+                this.hidePreview();
+            }
+        }
+    },
+
     handleDragStart: function(event, itemType) {
         // Used to identify the type of item (Block vs Man vs Elevator)
-        event.dataTransfer.setData('modelName', itemType.name);
+        this._dragData.modelName = itemType;
     },
 
     handleRedragStart: function(event, item) {
         // Used to identify the item on re-drag
-        event.dataTransfer.setData('id', item.id);
-        event.dataTransfer.setData('modelName', item.constructor.name);
+        this._dragData.itemId = item.id;
+        this._dragData.modelName = item.constructor;
     },
 
     handleDragOver: function(event) {
         event.preventDefault();
-        // Snap preview to grid
-        var preview = {
-            left: mapUtils.findCellIndex(event.clientX),
-            top: mapUtils.findCellIndex(event.clientY)
-        };
-        this.setState({preview: preview});
+        this.snapPreviewToGrid(event.clientX, event.clientY);
     },
 
     handleDragEnd: function(event) {
-        this.setState({preview: null});
+        this.hidePreview();
     },
 
     handleDrop: function(event) {
-        var left = mapUtils.findCellIndex(event.clientX);
-        var top = mapUtils.findCellIndex(event.clientY);
-        var model = models[event.dataTransfer.getData('modelName')];
-        var itemId = event.dataTransfer.getData('id'); // Item has been re-dragged
+        this.placeItem(event.clientX, event.clientY);
+    },
+
+    placeItem: function(x, y) {
+        var left = mapUtils.findCellIndex(x);
+        var top = mapUtils.findCellIndex(y);
+        var model = this._dragData.modelName;
+        var itemId = this._dragData.itemId;
         // Whatever happens, hide preview after drop
         var newState = {
             preview: null
@@ -129,9 +161,23 @@ var Level = React.createClass({
         } catch (e) {
             // Adding of item failed, presumably due to that cell being taken
             // TODO: Catch errors
+            console.log(e);
         } finally {
             this.setState(newState);
         }
+    },
+
+    snapPreviewToGrid: function(x, y) {
+        // Snap preview to grid
+        var preview = {
+            left: mapUtils.findCellIndex(x),
+            top: mapUtils.findCellIndex(y)
+        };
+        this.setState({preview: preview});
+    },
+
+    hidePreview: function() {
+        this.setState({preview: null});
     },
 
     modelsToComponents: function(model) {
@@ -185,6 +231,9 @@ var Level = React.createClass({
                     isPlacementMode={this.state.isPlacementMode}
                     onDragStart={this.handleDragStart}
                     onDragEnd={this.handleDragEnd}
+                    onTouchStart={this.handleTouchStart}
+                    onTouchMove={this.handleTouchMove}
+                    onTouchEnd={this.handleTouchEnd}
                 />
             </div>
         );

@@ -12,11 +12,15 @@ var Item = React.createClass({
             styles.width = this.props.scaledWidth();
             styles.height = this.props.scaledHeight();
         }
+        // TODO: Pass through all props except certain ones we've already read
         return (
             <div
                 style={styles}
                 onDragStart={this.props.onDragStart}
                 onDragEnd={this.props.onDragEnd}
+                onTouchStart={this.props.onTouchStart}
+                onTouchMove={this.props.onTouchMove}
+                onTouchEnd={this.props.onTouchEnd}
                 draggable={this.props.draggable}
             />
         );

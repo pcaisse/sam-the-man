@@ -43,8 +43,13 @@ var Inventory = React.createClass({
         var blocks = inventory.filterByType(models.Block);
         var men = inventory.filterByType(models.Man);
         var elevators = inventory.filterByType(models.Elevator);
+        // Event handlers
         var onDragStart = this.props.onDragStart;
         var onDragEnd = this.props.onDragEnd;
+        var onTouchStart = this.props.onTouchStart;
+        var onTouchMove = this.props.onTouchMove;
+        var onTouchEnd = this.props.onTouchEnd;
+        // Inventory items as components
         var inventoryItems = [blocks, men, elevators].filter(function(itemTypes) {
                 return itemTypes.length;
             }).map(function(itemTypes) {
@@ -62,11 +67,16 @@ var Inventory = React.createClass({
                                 onDragStart(event, itemType);
                             }}
                             onDragEnd={onDragEnd}
+                            onTouchStart={function(event) {
+                                onTouchStart(event, itemType);
+                            }}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
                             draggable={true} />
                         <span>x {itemTypes.length}</span>
                     </span>
                 );
-            }.bind(this));
+            });
         return (
             <div style={containerStyles}>
                 <div style={styles}>
