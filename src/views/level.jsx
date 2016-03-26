@@ -142,14 +142,20 @@ var Level = React.createClass({
         var newState = {
             preview: null
         };
+        var items = this.state.items;
+        var item = new model({
+            top: top,
+            left: left,
+            isInventoryItem: true
+        });
+        var itemAddedSuccessfully = false;
         try {
-            var items = this.state.items;
-            var item = new model({
-                top: top,
-                left: left,
-                isInventoryItem: true
-            });
-            items.add(item); // this may fail if placed in taken cell
+            items.add(item);
+            itemAddedSuccessfully = true;
+        } catch (e) {
+            // Adding of item failed, presumably due to that cell being taken
+        }
+        if (itemAddedSuccessfully) {
             if (itemId) {
                 // Item was re-dragged
                 // Delete old item
@@ -164,13 +170,8 @@ var Level = React.createClass({
                 newState.inventory = inventory;
                 newState.allItemsPlaced = inventory.length === 0;
             }
-        } catch (e) {
-            // Adding of item failed, presumably due to that cell being taken
-            // TODO: Catch errors
-            console.log(e);
-        } finally {
-            this.setState(newState);
         }
+        this.setState(newState);
     },
 
     snapPreviewToGrid: function(x, y) {
