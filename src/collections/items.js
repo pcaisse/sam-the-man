@@ -185,7 +185,7 @@ Items.prototype.copy = function() {
         return new type(item._data);
     });
     items.unshift(null);
-    return new (Function.prototype.bind.apply(Items, items));
+    return new (Function.prototype.bind.apply(Items, items))();
 };
 
 module.exports = Items;

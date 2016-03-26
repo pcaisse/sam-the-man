@@ -35,7 +35,7 @@ Inventory.prototype.copy = function() {
         return itemType;
     });
     itemTypes.unshift(null);
-    return new (Function.prototype.bind.apply(Inventory, itemTypes));
+    return new (Function.prototype.bind.apply(Inventory, itemTypes))();
 };
 
 Inventory.prototype.filterByType = function(type) {
