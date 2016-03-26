@@ -58,13 +58,13 @@ var Level = React.createClass({
 
     updateItems: function() {
         if (!this.state.isComplete) {
+            this._animationRequestId = window.requestAnimationFrame(this.updateItems);
             var items = this.state.items;
             items.update();
             this.setState({
                 items: items,
                 isComplete: items.isGoalAchieved()
             });
-            this._animationRequestId = window.requestAnimationFrame(this.updateItems);
         }
     },
 
