@@ -31,13 +31,13 @@ var Inventory = React.createClass({
             padding: padding,
             backgroundColor: '#fff',
             border: border,
-            height: innerHeight
+            height: innerHeight,
+            overflow: 'hidden'
         };
-        var headingStyles = {
-            overflow: 'hidden',
+        var fontStyles = {
             fontWeight: 'bold',
             fontFamily: 'Courier New',
-            wordWrap: 'break-word'
+            fontSize: MAP.unit / 4
         };
         var inventory = this.props.inventory;
         var blocks = inventory.filterByType(models.Block);
@@ -73,14 +73,14 @@ var Inventory = React.createClass({
                             onTouchMove={onTouchMove}
                             onTouchEnd={onTouchEnd}
                             draggable={true} />
-                        <span>x {itemTypes.length}</span>
+                        <span style={fontStyles}>x {itemTypes.length}</span>
                     </span>
                 );
             });
         return (
             <div style={containerStyles}>
                 <div style={styles}>
-                    <div style={headingStyles}>Inventory</div>
+                    <div style={fontStyles}>Inventory</div>
                     {inventoryItems}
                     {this.goButton()}
                 </div>
