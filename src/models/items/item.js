@@ -19,20 +19,20 @@ function Item(data) {
         var adjustTop = false;
         // Adjust position fraction
         if (movement === MAP.MOVEMENTS.FALL) {
-            this.topFraction += MAP.FALLS_PER_CELL;
+            this.topFraction += MAP.MOVEMENTS_PER_FALL;
             adjustTop = true;
         } else if (movement === MAP.MOVEMENTS.WALK) {
             if (this.isFacingRight) {
-                this.leftFraction += MAP.WALKS_PER_CELL;
+                this.leftFraction += MAP.MOVEMENTS_PER_WALK;
             } else {
-                this.leftFraction -= MAP.WALKS_PER_CELL;
+                this.leftFraction -= MAP.MOVEMENTS_PER_WALK;
             }
             adjustLeft = true;
         } else if (movement === MAP.MOVEMENTS.MOVE_VERTICALLY) {
             if (this.isMovingDown) {
-                this.topFraction += MAP.VERTICAL_MOVEMENTS_PER_CELL;
+                this.topFraction += MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
             } else {
-                this.topFraction -= MAP.VERTICAL_MOVEMENTS_PER_CELL;
+                this.topFraction -= MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
             }
             adjustTop = true;
         }
