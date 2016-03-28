@@ -59,34 +59,6 @@ function Item(data) {
         }
     };
 
-    this.scaledWidth = function() {
-        return mapUtils.scaleToMap(this.width);
-    };
-
-    this.scaledHeight = function() {
-        return mapUtils.scaleToMap(this.height);
-    };
-
-    this.scaledTop = function() {
-        return mapUtils.scaleToMap(this.top) + mapUtils.scaleToMap(this.topFraction / MAP.MOVEMENTS_PER_CELL);
-    };
-
-    this.scaledLeft = function() {
-        return mapUtils.scaleToMap(this.left) + mapUtils.scaleToMap(this.leftFraction / MAP.MOVEMENTS_PER_CELL);
-    };
-
-    this.isWithinMapY = function() {
-        return this.scaledTop() >= 0 && this.scaledTop() <= MAP.height - this.scaledHeight();
-    };
-
-    this.isWithinMapX = function() {
-        return this.scaledLeft() >= 0 && this.scaledLeft() <= MAP.width - this.scaledWidth();
-    };
-
-    this.isWithinMapBounds = function() {
-        return this.isWithinMapX() && this.isWithinMapY();
-    };
-
     this.fractionLeft = function() {
         return mapUtils.asFraction(this.left) + this.leftFraction;
     };
@@ -103,6 +75,14 @@ function Item(data) {
         return mapUtils.asFraction(this.height);
     };
 
+    this.decimalLeft = function() {
+        return this.fractionLeft() / MAP.MOVEMENTS_PER_CELL;
+    };
+
+    this.decimalTop = function() {
+        return this.fractionTop() / MAP.MOVEMENTS_PER_CELL;
+    };
+
     this.collidesWith = function(item) {
         return this.fractionLeft() < item.fractionLeft() + item.fractionWidth() &&
             this.fractionLeft() + this.fractionWidth() > item.fractionLeft() &&
@@ -111,7 +91,7 @@ function Item(data) {
     };
 
     this.hasSamePosition = function(item) {
-        return this.scaledTop() === item.scaledTop() && this.scaledLeft() === item.scaledLeft();
+        return this.decimalTop() === item.decimalTop() && this.decimalLeft() === item.decimalLeft();
     };
 
     this.isSameAs = function(item) {

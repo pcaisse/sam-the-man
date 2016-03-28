@@ -1,14 +1,14 @@
 var React = require('react');
 var Link = require('react-router').Link;
-
-var MAP = require('../../constants/map');
+var mapUtils = require('../../utils/map');
 
 var SplashScreen = React.createClass({
     render: function() {
+        var mapDimensions = mapUtils.findMapDimensions();
         var styles = {
             backgroundColor: 'lightblue',
-            width: MAP.appWidth,
-            height: MAP.height
+            width: mapDimensions.appWidth,
+            height: mapDimensions.height
         };
         var titleStyles = {
             margin: '0 auto',

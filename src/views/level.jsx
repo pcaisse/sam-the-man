@@ -10,13 +10,14 @@ var ItemPreview = require('./ui/preview.jsx');
 var Modal = require('./ui/modal.jsx');
 
 var models = require('../models/items');
-var MAP = require('../constants/map');
+
 var utils = require('../utils/utils');
 var mapUtils = require('../utils/map');
 var modelViewUtils = require('../utils/modelView');
 
 var Level = React.createClass({
 
+    _animationRequestId: null,
     _dragData: {},
 
     getInitialState: function() {
@@ -69,8 +70,11 @@ var Level = React.createClass({
     },
 
     isOnMap: function(x, y) {
-        return mapUtils.findCellIndex(x) >= 0 && mapUtils.findCellIndex(x) < MAP.X &&
-            mapUtils.findCellIndex(y) >= 0 && mapUtils.findCellIndex(y) < MAP.Y;
+        var mapUnit = this.props.mapDimensions.unit;
+        return mapUtils.isWithinMapBounds(
+            mapUtils.findCellIndex(y, mapUnit),
+            mapUtils.findCellIndex(x, mapUnit)
+        );
     },
 
     handleTouchStart: function(event, itemType) {
@@ -134,8 +138,9 @@ var Level = React.createClass({
     },
 
     placeItem: function(x, y) {
-        var left = mapUtils.findCellIndex(x);
-        var top = mapUtils.findCellIndex(y);
+        var mapUnit = this.props.mapDimensions.unit;
+        var left = mapUtils.findCellIndex(x, mapUnit);
+        var top = mapUtils.findCellIndex(y, mapUnit);
         var model = this._dragData.modelName;
         var itemId = this._dragData.itemId;
         // Whatever happens, hide preview after drop
@@ -176,9 +181,10 @@ var Level = React.createClass({
 
     snapPreviewToGrid: function(x, y) {
         // Snap preview to grid
+        var mapUnit = this.props.mapDimensions.unit;
         var preview = {
-            left: mapUtils.findCellIndex(x),
-            top: mapUtils.findCellIndex(y)
+            left: mapUtils.findCellIndex(x, mapUnit),
+            top: mapUtils.findCellIndex(y, mapUnit)
         };
         this.setState({preview: preview});
     },
@@ -193,6 +199,7 @@ var Level = React.createClass({
         var handleDragEnd = this.handleDragEnd;
         var handleTouchEnd = this.handleTouchEnd;
         var handleTouchMove = this.handleTouchMove;
+        var mapDimensions = this.props.mapDimensions;
         return this.state.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
@@ -209,6 +216,7 @@ var Level = React.createClass({
                 props.onTouchMove = handleTouchMove;
                 props.onTouchEnd = handleTouchEnd;
             }
+            props.mapDimensions = mapDimensions;
             return <Component key={index} {...props} />;
         });
     },
@@ -219,14 +227,20 @@ var Level = React.createClass({
         };
         var styles = {
             position: 'relative',
-            width: this.props.map.width,
-            height: this.props.map.height,
+            width: this.props.mapDimensions.width,
+            height: this.props.mapDimensions.height,
             backgroundColor: '#e4e4e4',
             flex: 'auto'
         };
-        var placementPreviewItem = this.state.preview ? <ItemPreview {...this.state.preview} /> : null;
+        var placementPreviewItem = this.state.preview ?
+            <ItemPreview
+                styles={this.state.preview}
+                mapDimensions={this.props.mapDimensions} /> : null;
         var levelComplete = this.state.isComplete ?
-            <Modal text="Level Complete!" nextLevel={++this.props.currLevel} /> : null;
+            <Modal
+                text="Level Complete!"
+                nextLevel={++this.props.currLevel}
+                mapDimensions={this.props.mapDimensions} /> : null;
         return (
             <div style={containerStyles}>
                 <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
@@ -243,6 +257,7 @@ var Level = React.createClass({
                     onReset={this.reset}
                     allItemsPlaced={this.state.allItemsPlaced}
                     isPlacementMode={this.state.isPlacementMode}
+                    mapDimensions={this.props.mapDimensions}
                     onDragStart={this.handleDragStart}
                     onDragEnd={this.handleDragEnd}
                     onTouchStart={this.handleTouchStart}

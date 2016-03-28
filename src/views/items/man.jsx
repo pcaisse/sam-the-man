@@ -4,8 +4,9 @@ var mapUtils = require('../../utils/map');
 
 var Man = React.createClass({
     render: function() {
-        var backgroundSize = mapUtils.scaleToMap(this.props.width) + 'px ' +
-            mapUtils.scaleToMap(this.props.height) + 'px';
+        var mapUnit = this.props.mapDimensions.unit;
+        var backgroundSize = mapUtils.scaleToMap(this.props.width, mapUnit) + 'px ' +
+            mapUtils.scaleToMap(this.props.height, mapUnit) + 'px';
     	var styles = {
             position: this.props.position || 'absolute',
 			backgroundImage: 'url("img/running_man.png")',

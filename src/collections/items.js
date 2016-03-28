@@ -3,7 +3,7 @@ var Man = require('../models/items/man');
 var Elevator = require('../models/items/elevator');
 var Goal = require('../models/items/goal');
 
-var MAP = require('../constants/map');
+var mapUtils = require('../utils/map');
 var utils = require('../utils/utils');
 
 /**
@@ -174,7 +174,7 @@ Items.prototype.canContinueTo = function(funcName, item) {
     // Perform checks
     var collisionItem = this.itemCollidesWithItemWhere(futureItem, CAN_CONTINUE_FUNCS[funcName]);
     return {
-        canContinue: futureItem.isWithinMapBounds() && !collisionItem,
+        canContinue: mapUtils.isWithinMapBounds(futureItem.decimalTop(), futureItem.decimalLeft()) && !collisionItem,
         collisionItem: collisionItem
     };
 };

@@ -1,8 +1,6 @@
 var React = require('react');
 var Link = require('react-router').Link;
 
-var MAP = require('../../constants/map');
-
 var Modal = React.createClass({
     render: function() {
         var styles = {
@@ -10,11 +8,11 @@ var Modal = React.createClass({
             margin: '0 auto',
             width: 150,
             textAlign: 'center',
-            fontFamily: "'Courier New',Courier,monospace",
+            fontFamily: "Courier New",
             position: 'relative',
             top: '50%',
             transform: 'translateY(-50%)',
-            padding: parseInt(MAP.unit / 2),
+            padding: parseInt(this.props.mapDimensions.unit / 2),
         };
         var toNextLevelLink = '/level/' + this.props.nextLevel;
         return (

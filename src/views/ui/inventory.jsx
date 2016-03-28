@@ -1,7 +1,6 @@
 var React = require('react');
 
 var models = require('../../models/items');
-var MAP = require('../../constants/map');
 var modelViewUtils = require('../../utils/modelView');
 
 var Inventory = React.createClass({
@@ -16,8 +15,9 @@ var Inventory = React.createClass({
     },
     render: function() {
         // TODO: Refactor this function
-        var width = MAP.appWidth - MAP.width;
-        var height = MAP.height;
+        var mapDimensions = this.props.mapDimensions;
+        var width = mapDimensions.appWidth - mapDimensions.width;
+        var height = mapDimensions.height;
         var borderThickness = 1;
         var border = borderThickness + 'px solid black';
         var containerStyles = {
@@ -37,7 +37,7 @@ var Inventory = React.createClass({
         var fontStyles = {
             fontWeight: 'bold',
             fontFamily: 'Courier New',
-            fontSize: MAP.unit / 4
+            fontSize: mapDimensions.unit / 4
         };
         var inventory = this.props.inventory;
         var blocks = inventory.filterByType(models.Block);
@@ -54,14 +54,16 @@ var Inventory = React.createClass({
                 return itemTypes.length;
             }).map(function(itemTypes) {
                 var itemType = itemTypes[0];
+                // TODO: Refactor to have separate PlacedItem and InventoryItem views
                 var Component = modelViewUtils.modelToComponent(itemType);
                 return (
                     <span key={'wrapper' + itemType.name}>
                         <Component
                             key={itemType.name}
-                            width={MAP.unit}
-                            height={MAP.unit}
+                            width={mapDimensions.unit}
+                            height={mapDimensions.unit}
                             isInInventory={true}
+                            mapDimensions={mapDimensions}
                             position='relative'
                             onDragStart={function(event) {
                                 onDragStart(event, itemType);
