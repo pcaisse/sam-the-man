@@ -12,7 +12,7 @@ function findBestFitDimensions() {
         width: currWidth,
         height: currHeight
     };
-};
+}
 
 module.exports = {
     findCellIndex: function(value, unit) {

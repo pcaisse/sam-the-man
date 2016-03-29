@@ -2,8 +2,8 @@ var Item = require('./item');
 var MAP = require('../../constants/map');
 
 function Elevator(data) {
-    if (typeof data.isMovingDown !== "boolean") {
-        throw new TypeError('Elevator requires a boolean isMovingDown property');
+    if (typeof data.isGoingDown !== "boolean") {
+        throw new TypeError('Elevator requires a boolean isGoingDown property');
     }
     if (typeof data.isStopped !== "boolean") {
         throw new TypeError('Elevator requires a boolean isStopped property');
@@ -44,7 +44,7 @@ function Elevator(data) {
     this.onExited = function() {
         this.isUnloading = false;
         this.enteredItem = null;
-        this.isMovingDown = !this.isMovingDown;
+        this.isGoingDown = !this.isGoingDown;
     };
 
     Item.call(this, data);

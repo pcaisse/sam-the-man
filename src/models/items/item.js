@@ -29,7 +29,7 @@ function Item(data) {
             }
             adjustLeft = true;
         } else if (movement === MAP.MOVEMENTS.MOVE_VERTICALLY) {
-            if (this.isMovingDown) {
+            if (this.isGoingDown) {
                 this.topFraction += MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
             } else {
                 this.topFraction -= MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;

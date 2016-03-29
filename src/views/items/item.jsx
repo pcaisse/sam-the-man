@@ -42,7 +42,9 @@ var Item = React.createClass({
                 onTouchMove={this.props.onTouchMove}
                 onTouchEnd={this.props.onTouchEnd}
                 draggable={this.props.draggable}
-            />
+            >
+                {this.props.children}
+            </div>
         );
     }
 });
