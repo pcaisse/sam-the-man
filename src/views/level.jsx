@@ -15,20 +15,34 @@ var utils = require('../utils/utils');
 var mapUtils = require('../utils/map');
 var modelViewUtils = require('../utils/modelView');
 
+var INITIAL_STATE = {
+    allItemsPlaced: false,
+    isComplete: false,
+    isPlacementMode: true,
+    preview: null
+};
+
 var Level = React.createClass({
 
     _animationRequestId: null,
     _dragData: {},
 
+    getInitialLevelState: function(props) {
+        var initialState = INITIAL_STATE;
+        initialState.inventory = props.inventory.copy();
+        initialState.items = props.items.copy();
+        return initialState;
+    },
+
     getInitialState: function() {
-        return {
-            allItemsPlaced: false,
-            inventory: this.props.inventory.copy(),
-            isComplete: false,
-            isPlacementMode: true,
-            items: this.props.items.copy(),
-            preview: null
-        };
+        return this.getInitialLevelState(this.props);
+    },
+
+    componentWillReceiveProps: function(nextProps) {
+        if (this.props.currLevel !== nextProps.currLevel) {
+            // Level changed
+            this.setLevel(nextProps);
+        }
     },
 
     componentWillUpdate: function(nextProps, nextState) {
@@ -47,6 +61,11 @@ var Level = React.createClass({
     reset: function() {
         this.stop();
         this.setState(this.getInitialState());
+    },
+
+    setLevel: function(props) {
+        this.stop();
+        this.setState(this.getInitialLevelState(props));
     },
 
     play: function() {
