@@ -16,13 +16,12 @@ function Elevator(data) {
         return !!this.enteredItem;
     };
 
-    this.moveVertically = function() {
+    this.moveVertically = function(isTest) {
         if (!this.canMoveVertically) {
             throw new Error('Item cannot move vertically.');
         }
         this.move(MAP.MOVEMENTS.MOVE_VERTICALLY);
-        if (this instanceof Elevator && this.enteredItem) { // type check is a hack to avoid changing enetered item
-                                                            // when cloning the object (clone is not of Elevator type)
+        if (!isTest && this.enteredItem) {
             this.enteredItem.move(MAP.MOVEMENTS.MOVE_VERTICALLY);
         }
         return this;

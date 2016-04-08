@@ -11,7 +11,6 @@ var Modal = require('./ui/modal.jsx');
 
 var models = require('../models/items');
 
-var utils = require('../utils/utils');
 var mapUtils = require('../utils/map');
 var modelViewUtils = require('../utils/modelView');
 
@@ -222,7 +221,18 @@ var Level = React.createClass({
         return this.state.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
-            var props = utils.clone(item);
+            var props = {
+                top: item.top,
+                topFraction: item.topFraction,
+                left: item.left,
+                leftFraction: item.leftFraction,
+                width: item.width,
+                height: item.height,
+                mapDimensions: mapDimensions,
+                isFacingRight: item.isFacingRight,
+                isGoingDown: item.isGoingDown,
+                isDroppable: item.isDroppable
+            };
             if (item.isInventoryItem) {
                 props.draggable = true;
                 props.onDragStart = function(event) {
@@ -235,7 +245,6 @@ var Level = React.createClass({
                 props.onTouchMove = handleTouchMove;
                 props.onTouchEnd = handleTouchEnd;
             }
-            props.mapDimensions = mapDimensions;
             return <Component key={index} {...props} />;
         });
     },

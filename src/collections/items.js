@@ -4,7 +4,6 @@ var Elevator = require('../models/items/elevator');
 var Goal = require('../models/items/goal');
 
 var mapUtils = require('../utils/map');
-var utils = require('../utils/utils');
 
 /**
  * Used to tell if the item can continue its current action (walking, falling, etc).
@@ -139,11 +138,10 @@ Items.prototype.update = function() {
                             enterableItemWhichContainsItem.onExited();
                         }
                     } else {
-                        var flippedItem = utils.clone(item).turn();
-                        var canContinueToWalkOtherDirection = this.canContinueTo('walk', flippedItem);
-                        // Only turn if there's somewhere to go
-                        // This avoids non-stop flipping if the item is stuck
-                        if (canContinueToWalkOtherDirection.canContinue) {
+                        // Avoid non-stop flipping if the item is stuck
+                        var canContinueToWalkOtherDirection = this.canContinueTo('walk', item.turn());
+                        if (!canContinueToWalkOtherDirection.canContinue) {
+                            // There's nowhere to go, so reverse our preview-turn
                             item.turn();
                         }
                     }
@@ -168,13 +166,15 @@ Items.prototype.update = function() {
  * @return {Object} Contains result of check and collision item, if any.
  */
 Items.prototype.canContinueTo = function(funcName, item) {
-    // Clone item and put it in its future state to see if it is valid
-    var futureItem = utils.clone(item);
-    futureItem[funcName].call(futureItem);
+    // Put item in its future state to see if it is valid
+    item[funcName](true);
     // Perform checks
-    var collisionItem = this.itemCollidesWithItemWhere(futureItem, CAN_CONTINUE_FUNCS[funcName]);
+    var collisionItem = this.itemCollidesWithItemWhere(item, CAN_CONTINUE_FUNCS[funcName]);
+    var canContinue = mapUtils.isWithinMapBounds(item.decimalTop(), item.decimalLeft()) && !collisionItem;
+    // Reverse changes
+    item.unmove();
     return {
-        canContinue: mapUtils.isWithinMapBounds(futureItem.decimalTop(), futureItem.decimalLeft()) && !collisionItem,
+        canContinue: canContinue,
         collisionItem: collisionItem
     };
 };

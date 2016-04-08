@@ -12,50 +12,71 @@ function Item(data) {
     this.topFraction = 0;
     this.leftFraction = 0;
     this._data = data;
+    this._lastMove = null;
     Object.assign(this, data);
 
     this.move = function(movement) {
         var adjustLeft = false;
         var adjustTop = false;
+        var movementValues = {};
+        // Save to be able to undo changes
+        this._lastMove = {
+            top: this.top,
+            topFraction: this.topFraction,
+            left: this.left,
+            leftFraction: this.leftFraction
+        };
         // Adjust position fraction
         if (movement === MAP.MOVEMENTS.FALL) {
-            this.topFraction += MAP.MOVEMENTS_PER_FALL;
+            movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_FALL;
             adjustTop = true;
         } else if (movement === MAP.MOVEMENTS.WALK) {
             if (this.isFacingRight) {
-                this.leftFraction += MAP.MOVEMENTS_PER_WALK;
+                movementValues.leftFraction = this.leftFraction + MAP.MOVEMENTS_PER_WALK;
             } else {
-                this.leftFraction -= MAP.MOVEMENTS_PER_WALK;
+                movementValues.leftFraction = this.leftFraction - MAP.MOVEMENTS_PER_WALK;
             }
             adjustLeft = true;
         } else if (movement === MAP.MOVEMENTS.MOVE_VERTICALLY) {
             if (this.isGoingDown) {
-                this.topFraction += MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
+                movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
             } else {
-                this.topFraction -= MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
+                movementValues.topFraction = this.topFraction - MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
             }
             adjustTop = true;
         }
         // Change position as needed based on fraction
         if (adjustTop) {
             if (this.topFraction > 0 && this.topFraction % MAP.MOVEMENTS_PER_CELL === 0) {
-                this.top += 1;
-                this.topFraction = 0;
+                movementValues.top = this.top + 1;
+                movementValues.topFraction = 0;
             }
             if (this.topFraction < 0) {
-                this.top -= 1;
-                this.topFraction += MAP.MOVEMENTS_PER_CELL;
+                movementValues.top = this.top - 1;
+                movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_CELL;
             }
         }
         if (adjustLeft) {
             if (this.leftFraction > 0 && this.leftFraction % MAP.MOVEMENTS_PER_CELL === 0) {
-                this.left += 1;
-                this.leftFraction = 0;
+                movementValues.left = this.left + 1;
+                movementValues.leftFraction = 0;
             }
             if (this.leftFraction < 0) {
-                this.left -= 1;
-                this.leftFraction += MAP.MOVEMENTS_PER_CELL;
+                movementValues.left = this.left - 1;
+                movementValues.leftFraction = this.leftFraction + MAP.MOVEMENTS_PER_CELL;
             }
+        }
+        // Apply new movement values
+        this.applyMovements(movementValues);
+    };
+
+    this.unmove = function() {
+        this.applyMovements(this._lastMove);
+    };
+
+    this.applyMovements = function(movementValues) {
+        for (var prop in movementValues) {
+            this[prop] = movementValues[prop];
         }
     };
 
