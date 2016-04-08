@@ -6,34 +6,37 @@ function Man(data) {
     if (typeof data.isFacingRight !== "boolean") {
         throw new TypeError('Man requires a boolean isFacingRight property');
     }
-    data.canWalk = true;
-    data.canFall = true;
-    data.canCompleteGoal = true;
-    data.isCollidable = true;
-
-    this.walk = function() {
-        if (!this.canWalk) {
-            throw new Error('Item cannot walk.');
-        }
-        this.move(MAP.MOVEMENTS.WALK);
-        return this;
-    };
-
-    this.turn = function() {
-        this.isFacingRight = !this.isFacingRight;
-        return this;
-    };
-
-    this.onEnter = function() {
-        this.isWaiting = true;
-    };
-
-    this.onStop = function() {
-        this.isWaiting = false;
-    };
-
-    Falls.call(this);
     Item.call(this, data);
+    this.constructor = Man;
 }
+
+Man.prototype = Object.create(Item.prototype);
+Man.prototype.fall = Falls.prototype.fall;
+
+Man.prototype.canWalk = true;
+Man.prototype.canFall = true;
+Man.prototype.canCompleteGoal = true;
+Man.prototype.isCollidable = true;
+
+Man.prototype.walk = function() {
+    if (!this.canWalk) {
+        throw new Error('Item cannot walk.');
+    }
+    this.move(MAP.MOVEMENTS.WALK);
+    return this;
+};
+
+Man.prototype.turn = function() {
+    this.isFacingRight = !this.isFacingRight;
+    return this;
+};
+
+Man.prototype.onEnter = function() {
+    this.isWaiting = true;
+};
+
+Man.prototype.onStop = function() {
+    this.isWaiting = false;
+};
 
 module.exports = Man;
