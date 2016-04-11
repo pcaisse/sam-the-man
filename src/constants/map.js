@@ -14,7 +14,8 @@ var TOTAL_X = X + INVENTORY_X;
 var MOVEMENTS = {
     FALL: 'fall',
     WALK: 'walk',
-    MOVE_VERTICALLY: 'moveVertically'
+    MOVE_DOWN: 'moveDown',
+    MOVE_UP: 'moveUp'
 };
 
 module.exports = {

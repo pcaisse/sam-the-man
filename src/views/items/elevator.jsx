@@ -21,14 +21,31 @@ var Elevator = React.createClass({
         }
         return <div style={styles} />;
     },
+    toggleDirection: function() {
+        if (this.props.isPlacementMode && this.props.isInventoryItem) {
+            // Toggle elevator direction
+            this.props.editItem(this.props.id, {
+                isGoingDown: !this.props.isGoingDown
+            });
+        }
+    },
     render: function() {
     	var styles = {
             position: this.props.position || 'absolute',
             boxShadow: 'inset 0px 0px 0px 1px brown'
     	};
         var arrow = this.arrow(this.props.isGoingDown, 10, 'orange');
+        var toggleDirection = this.toggleDirection;
+        var onTouchStart = this.props.onTouchStart;
+        var props = Object.assign({}, this.props, {
+            onTouchStart: function(event) {
+                onTouchStart(event);
+                toggleDirection();
+            },
+            onClick: this.toggleDirection,
+        });
         return (
-            <Item style={styles} {...this.props}>
+            <Item style={styles} {...props}>
                 {arrow}
             </Item>
         );

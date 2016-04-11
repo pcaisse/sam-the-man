@@ -36,6 +36,7 @@ var Item = React.createClass({
         return (
             <div
                 style={styles}
+                onClick={this.props.onClick}
                 onDragStart={this.props.onDragStart}
                 onDragEnd={this.props.onDragEnd}
                 onTouchStart={this.props.onTouchStart}

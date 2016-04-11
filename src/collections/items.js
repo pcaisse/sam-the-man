@@ -61,6 +61,12 @@ Items.prototype.remove = function(id) {
     }
 };
 
+Items.prototype.find = function(id) {
+    return this.filter(function(item) {
+        return item.id === id;
+    })[0];
+};
+
 Items.prototype.itemCollidesWithItemWhere = function(item, conditionFunc) {
     return this.filter(function(currItem) {
         return !item.isSameAs(currItem) && item.collidesWith(currItem) && conditionFunc(currItem, item);

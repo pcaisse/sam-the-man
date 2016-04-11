@@ -197,6 +197,15 @@ var Level = React.createClass({
         this.setState(newState);
     },
 
+    editItem: function(itemId, newValues) {
+        var items = this.state.items;
+        var item = items.find(itemId);
+        var editedItem = item.edit(newValues);
+        items.remove(itemId);
+        items.add(editedItem);
+        this.setState({items: items});
+    },
+
     snapPreviewToGrid: function(x, y) {
         // Snap preview to grid
         var mapUnit = this.props.mapDimensions.unit;
@@ -218,10 +227,14 @@ var Level = React.createClass({
         var handleTouchEnd = this.handleTouchEnd;
         var handleTouchMove = this.handleTouchMove;
         var mapDimensions = this.props.mapDimensions;
+        var isPlacementMode = this.state.isPlacementMode;
+        var editItem = this.editItem;
         return this.state.items.filter(function(item) {
             return item instanceof model;
         }).map(function(item, index) {
+            // Define props to be passed to component
             var props = {
+                id: item.id,
                 top: item.top,
                 topFraction: item.topFraction,
                 left: item.left,
@@ -231,7 +244,9 @@ var Level = React.createClass({
                 mapDimensions: mapDimensions,
                 isFacingRight: item.isFacingRight,
                 isGoingDown: item.isGoingDown,
-                isDroppable: item.isDroppable
+                isDroppable: item.isDroppable,
+                isInventoryItem: item.isInventoryItem,
+                isPlacementMode: isPlacementMode
             };
             if (item.isInventoryItem) {
                 props.draggable = true;
@@ -244,6 +259,7 @@ var Level = React.createClass({
                 };
                 props.onTouchMove = handleTouchMove;
                 props.onTouchEnd = handleTouchEnd;
+                props.editItem = editItem;
             }
             return <Component key={index} {...props} />;
         });

@@ -17,6 +17,13 @@ Item.prototype.topFraction = 0;
 Item.prototype.leftFraction = 0;
 Item.prototype._lastMove = null;
 
+Item.prototype.edit = function(values) {
+    Object.keys(values).forEach(function(prop) {
+        this[prop] = values[prop];
+    }.bind(this));
+    return this;
+};
+
 Item.prototype.move = function(movement) {
     var adjustLeft = false;
     var adjustTop = false;
@@ -39,12 +46,11 @@ Item.prototype.move = function(movement) {
             movementValues.leftFraction = this.leftFraction - MAP.MOVEMENTS_PER_WALK;
         }
         adjustLeft = true;
-    } else if (movement === MAP.MOVEMENTS.MOVE_VERTICALLY) {
-        if (this.isGoingDown) {
-            movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
-        } else {
-            movementValues.topFraction = this.topFraction - MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
-        }
+    } else if (movement === MAP.MOVEMENTS.MOVE_DOWN) {
+        movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
+        adjustTop = true;
+    } else if (movement === MAP.MOVEMENTS.MOVE_UP) {
+        movementValues.topFraction = this.topFraction - MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
         adjustTop = true;
     }
     // Change position as needed based on fraction

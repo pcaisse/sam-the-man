@@ -2,18 +2,14 @@ var Item = require('./item');
 var MAP = require('../../constants/map');
 
 function Elevator(data) {
-    if (typeof data.isGoingDown !== "boolean") {
-        throw new TypeError('Elevator requires a boolean isGoingDown property');
-    }
-    if (typeof data.isStopped !== "boolean") {
-        throw new TypeError('Elevator requires a boolean isStopped property');
-    }
     Item.call(this, data);
     this.constructor = Elevator;
 }
 
 Elevator.prototype = Object.create(Item.prototype);
 Elevator.prototype.isEnterable = true;
+Elevator.prototype.isStopped = true;
+Elevator.prototype.isGoingDown = false;
 Elevator.prototype.canMoveVertically = true;
 Elevator.prototype.enteredItem = null;
 
@@ -25,9 +21,10 @@ Elevator.prototype.moveVertically = function(isTest) {
     if (!this.canMoveVertically) {
         throw new Error('Item cannot move vertically.');
     }
-    this.move(MAP.MOVEMENTS.MOVE_VERTICALLY);
+    var movement = this.isGoingDown ? MAP.MOVEMENTS.MOVE_DOWN : MAP.MOVEMENTS.MOVE_UP;
+    this.move(movement);
     if (!isTest && this.enteredItem) {
-        this.enteredItem.move(MAP.MOVEMENTS.MOVE_VERTICALLY);
+        this.enteredItem.move(movement);
     }
     return this;
 };
