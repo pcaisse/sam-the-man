@@ -17,7 +17,7 @@ var CAN_CONTINUE_FUNCS = {
         return currItem.isCollidable && !currItem.canWalk;
     },
     moveVertically: function(currItem, item) {
-        return currItem.isCollidable && !item.enteredItem.isSameAs(currItem);
+        return currItem.isCollidable && !item.enteredItem.isSameAs(currItem) || currItem.isEnterable;
     }
 };
 
@@ -125,7 +125,7 @@ Items.prototype.update = function() {
                 acheivableItemWhichContainsItem.onAchieved();
             } else {
                 var enterableItemWhichContainsItem = this.enterableItemWhichContainsItem(item);
-                if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isEntered()) {
+                if (enterableItemWhichContainsItem && !enterableItemWhichContainsItem.isOccupied()) {
                     // Tell entered item that it has been entered
                     enterableItemWhichContainsItem.onEntered(item);
                 }
@@ -140,8 +140,8 @@ Items.prototype.update = function() {
                         // Item can continue walking
                         item.walk();
                         if (enterableItemWhichContainsItem && enterableItemWhichContainsItem.isUnloading) {
-                            // Tell entered item that contained item has exited
-                            enterableItemWhichContainsItem.onExited();
+                            // Tell entered item that contained item has begun to exit
+                            enterableItemWhichContainsItem.onExitStart();
                         }
                     } else {
                         // Avoid non-stop flipping if the item is stuck

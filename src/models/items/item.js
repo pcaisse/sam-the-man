@@ -38,41 +38,33 @@ Item.prototype.move = function(movement) {
     // Adjust position fraction
     if (movement === MAP.MOVEMENTS.FALL) {
         movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_FALL;
-        adjustTop = true;
     } else if (movement === MAP.MOVEMENTS.WALK) {
         if (this.isFacingRight) {
             movementValues.leftFraction = this.leftFraction + MAP.MOVEMENTS_PER_WALK;
         } else {
             movementValues.leftFraction = this.leftFraction - MAP.MOVEMENTS_PER_WALK;
         }
-        adjustLeft = true;
     } else if (movement === MAP.MOVEMENTS.MOVE_DOWN) {
         movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
-        adjustTop = true;
     } else if (movement === MAP.MOVEMENTS.MOVE_UP) {
         movementValues.topFraction = this.topFraction - MAP.MOVEMENTS_PER_VERTICAL_MOVEMENT;
-        adjustTop = true;
     }
     // Change position as needed based on fraction
-    if (adjustTop) {
-        if (this.topFraction > 0 && this.topFraction % MAP.MOVEMENTS_PER_CELL === 0) {
-            movementValues.top = this.top + 1;
-            movementValues.topFraction = 0;
-        }
-        if (this.topFraction < 0) {
-            movementValues.top = this.top - 1;
-            movementValues.topFraction = this.topFraction + MAP.MOVEMENTS_PER_CELL;
-        }
+    if (movementValues.topFraction > 0 && movementValues.topFraction % MAP.MOVEMENTS_PER_CELL === 0) {
+        movementValues.top = this.top + 1;
+        movementValues.topFraction = 0;
     }
-    if (adjustLeft) {
-        if (this.leftFraction > 0 && this.leftFraction % MAP.MOVEMENTS_PER_CELL === 0) {
-            movementValues.left = this.left + 1;
-            movementValues.leftFraction = 0;
-        }
-        if (this.leftFraction < 0) {
-            movementValues.left = this.left - 1;
-            movementValues.leftFraction = this.leftFraction + MAP.MOVEMENTS_PER_CELL;
-        }
+    if (movementValues.topFraction < 0) {
+        movementValues.top = this.top - 1;
+        movementValues.topFraction = movementValues.topFraction + MAP.MOVEMENTS_PER_CELL;
+    }
+    if (movementValues.leftFraction > 0 && movementValues.leftFraction % MAP.MOVEMENTS_PER_CELL === 0) {
+        movementValues.left = this.left + 1;
+        movementValues.leftFraction = 0;
+    }
+    if (movementValues.leftFraction < 0) {
+        movementValues.left = this.left - 1;
+        movementValues.leftFraction = movementValues.leftFraction + MAP.MOVEMENTS_PER_CELL;
     }
     // Apply new movement values
     this.applyMovements(movementValues);

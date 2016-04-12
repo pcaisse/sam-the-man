@@ -13,7 +13,7 @@ Elevator.prototype.isGoingDown = false;
 Elevator.prototype.canMoveVertically = true;
 Elevator.prototype.enteredItem = null;
 
-Elevator.prototype.isEntered = function() {
+Elevator.prototype.isOccupied = function() {
     return !!this.enteredItem;
 };
 
@@ -42,7 +42,7 @@ Elevator.prototype.stop = function() {
     return this;
 };
 
-Elevator.prototype.onExited = function() {
+Elevator.prototype.onExitStart = function() {
     this.isUnloading = false;
     this.enteredItem = null;
     this.isGoingDown = !this.isGoingDown;
