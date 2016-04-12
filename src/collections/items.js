@@ -6,20 +6,29 @@ var Goal = require('../models/items/goal');
 var mapUtils = require('../utils/map');
 
 /**
+ * Enumerator for item movement function names.
+ * @type {Object.<string, string>}
+ */
+var MOVEMENTS_FUNCS = {
+    WALK: 'walk',
+    FALL: 'fall',
+    MOVE_VERTICALLY: 'moveVertically'
+};
+
+/**
  * Used to tell if the item can continue its current action (walking, falling, etc).
  * @type {Object.<string, function>}
  */
-var CAN_CONTINUE_FUNCS = {
-    fall: function(currItem, item) {
-        return (currItem.isCollidable && !(currItem.canWalk && item.canWalk)) || currItem.isEnterable;
-    },
-    walk: function(currItem) {
-        return currItem.isCollidable && !currItem.canWalk;
-    },
-    moveVertically: function(currItem, item) {
-        return currItem.isCollidable && !item.enteredItem.isSameAs(currItem) || currItem.isEnterable;
-    }
-};
+var CAN_CONTINUE_FUNCS = {};
+CAN_CONTINUE_FUNCS[MOVEMENTS_FUNCS.FALL] = function(currItem, item) {
+    return (currItem.isCollidable && !(currItem.canWalk && item.canWalk)) || currItem.isEnterable;
+},
+CAN_CONTINUE_FUNCS[MOVEMENTS_FUNCS.WALK] = function(currItem) {
+    return currItem.isCollidable && !currItem.canWalk;
+},
+CAN_CONTINUE_FUNCS[MOVEMENTS_FUNCS.MOVE_VERTICALLY] = function(currItem, item) {
+    return currItem.isCollidable && !item.enteredItem.isSameAs(currItem) || currItem.isEnterable;
+}
 
 function Items() {
     this.count = 0;
@@ -106,7 +115,7 @@ Items.prototype.isGoalAchieved = function() {
  */
 Items.prototype.update = function() {
     this.forEach(function(item) {
-        var canContinueToFall = item.canFall && this.canContinueTo('fall', item);
+        var canContinueToFall = item.canFall && this.canContinueTo(MOVEMENTS_FUNCS.FALL, item);
         if (item.canWalk) {
             var droppableItemWalkedOnByItem = this.droppableItemWalkedOnByItem(item);
             if (droppableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
@@ -135,7 +144,7 @@ Items.prototype.update = function() {
                     canContinueToFall.collisionItem.onWalkedOn(item);
                 }
                 if (!item.isWaiting) {
-                    var canContinueToWalk = this.canContinueTo('walk', item);
+                    var canContinueToWalk = this.canContinueTo(MOVEMENTS_FUNCS.WALK, item);
                     if (canContinueToWalk.canContinue) {
                         // Item can continue walking
                         item.walk();
@@ -145,7 +154,7 @@ Items.prototype.update = function() {
                         }
                     } else {
                         // Avoid non-stop flipping if the item is stuck
-                        var canContinueToWalkOtherDirection = this.canContinueTo('walk', item.turn());
+                        var canContinueToWalkOtherDirection = this.canContinueTo(MOVEMENTS_FUNCS.WALK, item.turn());
                         if (!canContinueToWalkOtherDirection.canContinue) {
                             // There's nowhere to go, so reverse our preview-turn
                             item.turn();
@@ -154,7 +163,7 @@ Items.prototype.update = function() {
                 }
             }
         } else if (item.canMoveVertically && !item.isStopped) {
-            var canContinueToMoveVertically = this.canContinueTo('moveVertically', item);
+            var canContinueToMoveVertically = this.canContinueTo(MOVEMENTS_FUNCS.MOVE_VERTICALLY, item);
             if (canContinueToMoveVertically.canContinue) {
                 // Item can continue to move vertically
                 item.moveVertically();
