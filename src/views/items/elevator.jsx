@@ -1,6 +1,8 @@
 var React = require('react');
 var Item = require('./item.jsx');
 
+var mapUtils = require('../../utils/map');
+
 var Elevator = React.createClass({
     arrow: function(isDown, size, color) {
         var styles = {
@@ -36,11 +38,20 @@ var Elevator = React.createClass({
     	};
         var arrow = this.arrow(this.props.isGoingDown, 10, 'orange');
         var toggleDirection = this.toggleDirection;
-        var onTouchStart = this.props.onTouchStart;
+        var onTouchEnd = this.props.onTouchEnd;
+        var onTouchMove = this.props.onTouchMove;
+        var wasTouchMoved = false;
         var props = Object.assign({}, this.props, {
-            onTouchStart: function(event) {
-                onTouchStart(event);
-                toggleDirection();
+            onTouchMove: function(event) {
+                onTouchMove(event);
+                wasTouchMoved = true;
+            },
+            onTouchEnd: function(event) {
+                onTouchEnd(event);
+                if (!wasTouchMoved) {
+                    // Elevator has not been moved, only touched (tapped)
+                    toggleDirection();
+                }
             },
             onClick: this.toggleDirection,
         });
