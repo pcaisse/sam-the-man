@@ -1,4 +1,6 @@
 var Block = require('../models/items/block');
+var BreakableBlock = require('../models/items/breakableBlock');
+var DroppableBlock = require('../models/items/droppableBlock');
 var Man = require('../models/items/man');
 var Elevator = require('../models/items/elevator');
 var Goal = require('../models/items/goal');
@@ -24,7 +26,8 @@ function Inventory() {
 Inventory.prototype = Object.create(Array.prototype);
 
 Inventory.prototype.add = function(itemType) {
-    if (itemType !== Block && itemType !== Man && itemType !== Elevator && itemType !== Goal) {
+    if (itemType !== Block && itemType !== BreakableBlock && itemType !== DroppableBlock &&
+            itemType !== Man && itemType !== Elevator && itemType !== Goal) {
         throw new TypeError('Item type not valid');
     }
     this.push(itemType);

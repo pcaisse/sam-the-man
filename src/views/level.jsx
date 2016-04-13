@@ -171,14 +171,9 @@ var Level = React.createClass({
             left: left,
             isInventoryItem: true
         });
-        var itemAddedSuccessfully = false;
-        try {
+        var isCellTaken = items.isCellTaken(item);
+        if (!isCellTaken) {
             items.add(item);
-            itemAddedSuccessfully = true;
-        } catch (e) {
-            // Adding of item failed, presumably due to that cell being taken
-        }
-        if (itemAddedSuccessfully) {
             if (itemId) {
                 // Item was re-dragged
                 // Delete old item
@@ -244,7 +239,7 @@ var Level = React.createClass({
                 mapDimensions: mapDimensions,
                 isFacingRight: item.isFacingRight,
                 isGoingDown: item.isGoingDown,
-                isDroppable: item.isDroppable,
+                isBroken: item.isBroken,
                 isInventoryItem: item.isInventoryItem,
                 isPlacementMode: isPlacementMode
             };
@@ -289,6 +284,8 @@ var Level = React.createClass({
             <div style={containerStyles}>
                 <div style={styles} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
                     {this.modelsToComponents(models.Man)}
+                    {this.modelsToComponents(models.DroppableBlock)}
+                    {this.modelsToComponents(models.BreakableBlock)}
                     {this.modelsToComponents(models.Block)}
                     {this.modelsToComponents(models.Elevator)}
                     {this.modelsToComponents(models.Goal)}

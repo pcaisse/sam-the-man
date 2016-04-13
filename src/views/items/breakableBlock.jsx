@@ -1,11 +1,12 @@
 var React = require('react');
 var Item = require('./item.jsx');
 
-var Block = React.createClass({
+var BreakableBlock = React.createClass({
     render: function() {
     	var styles = {
     		position: this.props.position || 'absolute',
-            backgroundColor: 'black'
+            backgroundColor: 'red',
+            visibility: this.props.isBroken ? 'hidden' : 'visible'
     	};
         return (
             <Item style={styles} {...this.props} />
@@ -13,4 +14,4 @@ var Block = React.createClass({
     }
 });
 
-module.exports = Block;
+module.exports = BreakableBlock;

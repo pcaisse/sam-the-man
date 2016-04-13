@@ -6,6 +6,12 @@ module.exports = {
         if (model === models.Block) {
             return views.Block;
         }
+        if (model === models.BreakableBlock) {
+            return views.BreakableBlock;
+        }
+        if (model === models.DroppableBlock) {
+            return views.DroppableBlock;
+        }
         if (model === models.Elevator) {
             return views.Elevator;
         }

@@ -1,4 +1,6 @@
 var Block = require('../models/items/block');
+var BreakableBlock = require('../models/items/breakableBlock');
+var DroppableBlock = require('../models/items/droppableBlock');
 var Man = require('../models/items/man');
 var Elevator = require('../models/items/elevator');
 var Goal = require('../models/items/goal');
@@ -46,13 +48,11 @@ Items.prototype = Object.create(Array.prototype);
  */
 Items.prototype.add = function(item) {
     // Validate
-    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man) && !(item instanceof Goal)) {
+    if (!(item instanceof Block) && !(item instanceof Elevator) && !(item instanceof Man) && !(item instanceof Goal) &&
+            !(item instanceof BreakableBlock) && !(item instanceof DroppableBlock)) {
         throw new TypeError('Items in level must be of valid types.');
     }
-    var isCellTaken = this.some(function(currItem) {
-        return item.collidesWith(currItem);
-    });
-    if (isCellTaken) {
+    if (this.isCellTaken(item)) {
         throw new TypeError('There is already an item occupying that position.');
     }
     // Give unique id
@@ -68,6 +68,12 @@ Items.prototype.remove = function(id) {
             return;
         }
     }
+};
+
+Items.prototype.isCellTaken = function(item) {
+    return this.some(function(currItem) {
+        return item.collidesWith(currItem);
+    });
 };
 
 Items.prototype.find = function(id) {
@@ -94,9 +100,9 @@ Items.prototype.acheivableItemWhichContainsItem = function(item) {
     })[0];
 };
 
-Items.prototype.droppableItemWalkedOnByItem = function(item) {
+Items.prototype.droppableOrBreakableItemWalkedOnByItem = function(item) {
     return this.filter(function(currItem) {
-        return !item.isSameAs(currItem) && currItem.isDroppable && currItem.walkingOnItem &&
+        return !item.isSameAs(currItem) && (currItem.isDroppable || currItem.isBreakable) && currItem.walkingOnItem &&
             currItem.walkingOnItem.isSameAs(item);
     })[0];
 };
@@ -117,11 +123,11 @@ Items.prototype.update = function() {
     this.forEach(function(item) {
         var canContinueToFall = item.canFall && this.canContinueTo(MOVEMENTS_FUNCS.FALL, item);
         if (item.canWalk) {
-            var droppableItemWalkedOnByItem = this.droppableItemWalkedOnByItem(item);
-            if (droppableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
-                    !canContinueToFall.collisionItem.isSameAs(droppableItemWalkedOnByItem))) {
-                // Item has walked off of droppable item
-                droppableItemWalkedOnByItem.onWalkedOff();
+            var droppableOrBreakableItemWalkedOnByItem = this.droppableOrBreakableItemWalkedOnByItem(item);
+            if (droppableOrBreakableItemWalkedOnByItem && (!canContinueToFall.collisionItem ||
+                    !canContinueToFall.collisionItem.isSameAs(droppableOrBreakableItemWalkedOnByItem))) {
+                // Item has walked off of droppable/breakable item
+                droppableOrBreakableItemWalkedOnByItem.onWalkedOff();
             }
         }
         if (item.canFall && !item.isWaiting && canContinueToFall.canContinue) {
@@ -138,9 +144,10 @@ Items.prototype.update = function() {
                     // Tell entered item that it has been entered
                     enterableItemWhichContainsItem.onEntered(item);
                 }
-                if (canContinueToFall.collisionItem && canContinueToFall.collisionItem.isDroppable &&
+                if (canContinueToFall.collisionItem && (canContinueToFall.collisionItem.isDroppable ||
+                        canContinueToFall.collisionItem.isBreakable) &&
                         !canContinueToFall.collisionItem.walkingOnItem) {
-                    // Item is walking on droppable item
+                    // Item is walking on droppable/breakable item
                     canContinueToFall.collisionItem.onWalkedOn(item);
                 }
                 if (!item.isWaiting) {
