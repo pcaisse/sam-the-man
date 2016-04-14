@@ -20,4 +20,9 @@ BreakableBlock.prototype.onWalkedOff = function() {
     this.isCollidable = false;
 };
 
+BreakableBlock.prototype.onCollided = function() {
+    this.isBroken = true;
+    this.isCollidable = false;
+};
+
 module.exports = BreakableBlock;

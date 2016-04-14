@@ -107,6 +107,12 @@ Items.prototype.droppableOrBreakableItemWalkedOnByItem = function(item) {
     })[0];
 };
 
+Items.prototype.breakableItemCollidedWithItem = function(item) {
+    return this.filter(function(currItem) {
+        return currItem.isCollidable && currItem.isBreakable && !currItem.isBroken;
+    })[0];
+}
+
 Items.prototype.isGoalAchieved = function() {
     return this.filter(function(currItem) {
         return currItem.isAchievable;
@@ -160,6 +166,11 @@ Items.prototype.update = function() {
                             enterableItemWhichContainsItem.onExitStart();
                         }
                     } else {
+                        var breakableItemCollidedWithItem = this.breakableItemCollidedWithItem(item);
+                        if (breakableItemCollidedWithItem) {
+                            // Breakable item has been collided with
+                            breakableItemCollidedWithItem.onCollided();
+                        }
                         // Avoid non-stop flipping if the item is stuck
                         var canContinueToWalkOtherDirection = this.canContinueTo(MOVEMENTS_FUNCS.WALK, item.turn());
                         if (!canContinueToWalkOtherDirection.canContinue) {
