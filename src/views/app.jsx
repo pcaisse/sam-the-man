@@ -1,9 +1,10 @@
 var React = require('react');
+var Router = require('react-router').Router;
+var Route = require('react-router').Route;
+var hashHistory = require('react-router').hashHistory;
 
-var Level = require('./level.jsx');
-var MAP = require('../constants/map');
-var LEVELS = require('../constants/levels');
-
+var Game = require('./game.jsx');
+var Splash = require('./ui/splash.jsx');
 var mapUtils = require('../utils/map');
 
 var App = React.createClass({
@@ -22,27 +23,17 @@ var App = React.createClass({
         }.bind(this);
     },
 
+    createWithDefaultProps: function(Component, props) {
+        return <Component {...props} mapDimensions={this.state.mapDimensions} />;
+    },
+
     render: function() {
-        var mapDimensions = this.state.mapDimensions;
-        var styles = {
-            width: mapDimensions.appWidth
-        };
-        var currLevelIndex = this.props.params.currLevel || 0;
-        var currLevel = LEVELS[currLevelIndex];
-        if (!currLevel) {
-            throw new Error('Level not implemented');
-        }
-        var items = currLevel.items;
-        var inventory = currLevel.inventory;
         return (
-            <div style={styles}>
-                <Level
-                    items={items}
-                    map={MAP}
-                    inventory={inventory}
-                    currLevel={currLevelIndex}
-                    mapDimensions={mapDimensions} />
-            </div> 
+            <Router history={hashHistory} createElement={this.createWithDefaultProps}>
+                <Route path="/" component={Splash} />
+                <Route path="level" component={Game} />
+                <Route path="level/:currLevel" component={Game} />
+            </Router>
         );
     }
 });
