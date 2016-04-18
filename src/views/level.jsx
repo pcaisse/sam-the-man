@@ -278,7 +278,7 @@ var Level = React.createClass({
         var levelComplete = this.state.isComplete ?
             <Modal
                 text="Level Complete!"
-                nextLevel={++this.props.currLevel}
+                nextLevel={this.props.currLevel + 1}
                 mapDimensions={this.props.mapDimensions} /> : null;
         return (
             <div style={containerStyles}>

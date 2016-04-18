@@ -9,6 +9,14 @@ var mapUtils = require('../utils/map');
 
 var App = React.createClass({
 
+    statics: {
+        routes: [
+            <Route path="/" component={Splash} />,
+            <Route path="level" component={Game} />,
+            <Route path="level/:currLevel" component={Game} />
+        ]
+    },
+
     getInitialState: function() {
         return {
             mapDimensions: mapUtils.findMapDimensions()
@@ -29,11 +37,7 @@ var App = React.createClass({
 
     render: function() {
         return (
-            <Router history={hashHistory} createElement={this.createWithDefaultProps}>
-                <Route path="/" component={Splash} />
-                <Route path="level" component={Game} />
-                <Route path="level/:currLevel" component={Game} />
-            </Router>
+            <Router history={hashHistory} routes={App.routes} createElement={this.createWithDefaultProps} />
         );
     }
 });
