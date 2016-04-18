@@ -31,12 +31,11 @@ var LEVELS = [
             new Block({top: 5, left: 4}),
             new DroppableBlock({top: 5, left: 5}),
             new Block({top: 1, left: 5}),
-            new Elevator({top: 7, left: 6, isGoingDown: true}),
             new Block({top: 7, left: 9}),
             new Man({top: 4, left: 3, isFacingRight: true}),
             new Goal({top: 0, left: 1})
         ),
-        inventory: new Inventory(Block, Block, Elevator, BreakableBlock)
+        inventory: new Inventory(Block, Elevator, Elevator)
     })
 ];
 

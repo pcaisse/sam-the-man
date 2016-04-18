@@ -15,7 +15,7 @@ var LevelCompleteModal = React.createClass({
             padding: parseInt(this.props.mapDimensions.unit / 2),
         };
         var link = this.props.isLastLevel ? null : <Link to={'/level/' + this.props.nextLevel}>NEXT LEVEL</Link>
-        var msg = this.props.isLastLevel ? "Congratualations!" : "Level Complete!"
+        var msg = this.props.isLastLevel ? "Congratulations!" : "Level Complete!"
         return (
             <div style={styles}>
                 <span>{msg}</span>
