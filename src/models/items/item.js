@@ -119,4 +119,8 @@ Item.prototype.isSameAs = function(item) {
     return this.id === item.id;
 };
 
+Item.prototype.canMove = function() {
+    return this.canWalk || this.canFall || this.canMoveVertically;
+};
+
 module.exports = Item;

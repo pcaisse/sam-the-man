@@ -120,7 +120,10 @@ Items.prototype.isGoalAchieved = function() {
  * NB: This is where the magic happens!
  */
 Items.prototype.update = function() {
-    this.forEach(function(item) {
+    this.filter(function(item) {
+        // Items that move drive all updates
+        return item.canMove();
+    }).forEach(function(item) {
         var canContinueToFall = item.canFall && this.canContinueTo(MOVEMENTS_FUNCS.FALL, item);
         if (item.canWalk) {
             var droppableOrBreakableItemWalkedOnByItem = this.droppableOrBreakableItemWalkedOnByItem(item);
