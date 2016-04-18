@@ -107,12 +107,6 @@ Items.prototype.droppableOrBreakableItemWalkedOnByItem = function(item) {
     })[0];
 };
 
-Items.prototype.breakableItemCollidedWithItem = function(item) {
-    return this.filter(function(currItem) {
-        return currItem.isCollidable && currItem.isBreakable && !currItem.isBroken;
-    })[0];
-}
-
 Items.prototype.isGoalAchieved = function() {
     return this.filter(function(currItem) {
         return currItem.isAchievable;
@@ -166,12 +160,11 @@ Items.prototype.update = function() {
                             enterableItemWhichContainsItem.onExitStart();
                         }
                     } else {
-                        var breakableItemCollidedWithItem = this.breakableItemCollidedWithItem(item);
-                        if (breakableItemCollidedWithItem) {
+                        if (canContinueToWalk.collisionItem && canContinueToWalk.collisionItem.isBreakable) {
                             // Breakable item has been collided with
-                            breakableItemCollidedWithItem.onCollided();
+                            canContinueToWalk.collisionItem.onCollided();
                         }
-                        // Avoid non-stop flipping if the item is stuck
+                        // Turn item after collision, while avoiding non-stop flipping if the item is stuck
                         var canContinueToWalkOtherDirection = this.canContinueTo(MOVEMENTS_FUNCS.WALK, item.turn());
                         if (!canContinueToWalkOtherDirection.canContinue) {
                             // There's nowhere to go, so reverse our preview-turn
