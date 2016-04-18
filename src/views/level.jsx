@@ -6,8 +6,8 @@ var Elevator = require('./items/elevator.jsx');
 var Goal = require('./items/goal.jsx');
 
 var Inventory = require('./ui/inventory.jsx');
-var ItemPreview = require('./ui/preview.jsx');
-var Modal = require('./ui/modal.jsx');
+var ItemPlacementPreview = require('./ui/itemPlacementPreview.jsx');
+var LevelCompleteModal = require('./ui/levelCompleteModal.jsx');
 
 var models = require('../models/items');
 
@@ -18,7 +18,7 @@ var INITIAL_STATE = {
     allItemsPlaced: false,
     isComplete: false,
     isPlacementMode: true,
-    preview: null
+    itemPlacementPreview: null
 };
 
 var Level = React.createClass({
@@ -163,7 +163,7 @@ var Level = React.createClass({
         var itemId = this._dragData.itemId;
         // Whatever happens, hide preview after drop
         var newState = {
-            preview: null
+            itemPlacementPreview: null
         };
         var items = this.state.items;
         var item = new model({
@@ -204,15 +204,15 @@ var Level = React.createClass({
     snapPreviewToGrid: function(x, y) {
         // Snap preview to grid
         var mapUnit = this.props.mapDimensions.unit;
-        var preview = {
+        var itemPlacementPreview = {
             left: mapUtils.findCellIndex(x, mapUnit),
             top: mapUtils.findCellIndex(y, mapUnit)
         };
-        this.setState({preview: preview});
+        this.setState({itemPlacementPreview: itemPlacementPreview});
     },
 
     hidePreview: function() {
-        this.setState({preview: null});
+        this.setState({itemPlacementPreview: null});
     },
 
     modelsToComponents: function(model) {
@@ -271,13 +271,13 @@ var Level = React.createClass({
             backgroundColor: '#e4e4e4',
             flex: 'auto'
         };
-        var placementPreviewItem = this.state.preview ?
-            <ItemPreview
-                styles={this.state.preview}
+        var placementPreviewItem = this.state.itemPlacementPreview ?
+            <ItemPlacementPreview
+                styles={this.state.itemPlacementPreview}
                 mapDimensions={this.props.mapDimensions} /> : null;
         var levelComplete = this.state.isComplete ?
-            <Modal
-                text="Level Complete!"
+            <LevelCompleteModal
+                isLastLevel={this.props.isLastLevel}
                 nextLevel={this.props.currLevel + 1}
                 mapDimensions={this.props.mapDimensions} /> : null;
         return (

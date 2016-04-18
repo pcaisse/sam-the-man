@@ -10,6 +10,7 @@ var mapUtils = require('../utils/map');
 var App = React.createClass({
 
     statics: {
+        // Routes must be static to avoid react-router error
         routes: [
             <Route path="/" component={Splash} />,
             <Route path="level" component={Game} />,

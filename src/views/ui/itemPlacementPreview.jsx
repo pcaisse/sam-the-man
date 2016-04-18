@@ -1,7 +1,7 @@
 var React = require('react');
 var mapUtils = require('../../utils/map');
 
-var ItemPreview = React.createClass({
+var ItemPlacementPreview = React.createClass({
     render: function() {
         var mapUnit = this.props.mapDimensions.unit;
         var styles = {
@@ -17,4 +17,4 @@ var ItemPreview = React.createClass({
     }
 });
 
-module.exports = ItemPreview;
+module.exports = ItemPlacementPreview;

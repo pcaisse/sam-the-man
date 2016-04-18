@@ -1,7 +1,7 @@
 var React = require('react');
 var Link = require('react-router').Link;
 
-var Modal = React.createClass({
+var LevelCompleteModal = React.createClass({
     render: function() {
         var styles = {
             backgroundColor: 'lightblue',
@@ -14,15 +14,16 @@ var Modal = React.createClass({
             transform: 'translateY(-50%)',
             padding: parseInt(this.props.mapDimensions.unit / 2),
         };
-        var toNextLevelLink = '/level/' + this.props.nextLevel;
+        var link = this.props.isLastLevel ? null : <Link to={'/level/' + this.props.nextLevel}>NEXT LEVEL</Link>
+        var msg = this.props.isLastLevel ? "Congratualations!" : "Level Complete!"
         return (
             <div style={styles}>
-                <span>{this.props.text}</span>
+                <span>{msg}</span>
                 <br/>
-                <div><Link to={toNextLevelLink}>NEXT LEVEL</Link></div>
+                <div>{link}</div>
             </div>
         );
     }
 });
 
-module.exports = Modal;
+module.exports = LevelCompleteModal;
