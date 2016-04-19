@@ -5,7 +5,7 @@ var Goal = React.createClass({
     render: function() {
         var styles = {
             position: 'absolute',
-            boxShadow: 'inset 0px 0px 0px 1px green'
+            boxShadow: 'inset 0px 0px 0px 10px yellow'
         };
         return (
             <Item style={styles} {...this.props} />

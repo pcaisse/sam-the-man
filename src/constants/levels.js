@@ -36,6 +36,36 @@ var LEVELS = [
             new Goal({top: 0, left: 1})
         ),
         inventory: new Inventory(Block, Elevator, Elevator)
+    }),
+    new Level({
+        items: new Items(
+            new Block({top: 1, left: 0}),
+            new Block({top: 1, left: 1}),
+            new DroppableBlock({top: 1, left: 2}),
+            new Block({top: 1, left: 3}),
+            new Block({top: 1, left: 5}),
+            new DroppableBlock({top: 1, left: 6}),
+            new Block({top: 1, left: 7}),
+            new Block({top: 1, left: 8}),
+            new Block({top: 1, left: 9}),
+            new Block({top: 4, left: 0}),
+            new Block({top: 4, left: 2}),
+            new Block({top: 4, left: 3}),
+            new Block({top: 7, left: 1}),
+            new Block({top: 7, left: 2}),
+            new Block({top: 7, left: 3}),
+            new DroppableBlock({top: 4, left: 4}),
+            new Block({top: 4, left: 5}),
+            new Block({top: 4, left: 6}),
+            new Block({top: 4, left: 8}),
+            new Block({top: 7, left: 5}),
+            new Block({top: 7, left: 6}),
+            new Block({top: 7, left: 7}),
+            new Block({top: 4, left: 9}),
+            new Man({top: 0, left: 0, isFacingRight: true}),
+            new Goal({top: 7, left: 4})
+        ),
+        inventory: new Inventory(Block, BreakableBlock)
     })
 ];
 
