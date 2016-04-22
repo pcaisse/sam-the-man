@@ -5,13 +5,16 @@ var modelViewUtils = require('../../utils/modelView');
 
 var Inventory = React.createClass({
     goButton: function() {
-        if (!this.props.allItemsPlaced) {
-            return null;
-        }
         if (this.props.isPlacementMode) {
             return <button onClick={this.props.onStart}>Go!</button>;
         }
-        return <button onClick={this.props.onReset}>Reset</button>;
+        return null;
+    },
+    resetButton: function() {
+        if (this.props.areSomeItemsPlaced || !this.props.isPlacementMode) {
+            return <button onClick={this.props.onReset}>Reset</button>;
+        }
+        return null;
     },
     render: function() {
         // TODO: Refactor this function
@@ -85,8 +88,9 @@ var Inventory = React.createClass({
             <div style={containerStyles}>
                 <div style={styles}>
                     <div style={fontStyles}>Inventory</div>
-                    {inventoryItems}
                     {this.goButton()}
+                    {this.resetButton()}
+                    {inventoryItems}
                 </div>
             </div>
         );

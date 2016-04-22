@@ -15,7 +15,6 @@ var mapUtils = require('../utils/map');
 var modelViewUtils = require('../utils/modelView');
 
 var INITIAL_STATE = {
-    allItemsPlaced: false,
     isComplete: false,
     isPlacementMode: true,
     itemPlacementPreview: null
@@ -73,6 +72,10 @@ var Level = React.createClass({
 
     stop: function() {
         window.cancelAnimationFrame(this._animationRequestId);
+    },
+
+    areSomeItemsPlaced: function() {
+        return this.state.inventory && this.state.inventory.length < this.props.inventory.length;
     },
 
     updateItems: function() {
@@ -186,7 +189,6 @@ var Level = React.createClass({
                 var inventory = this.state.inventory;
                 inventory.removeOneOfType(item.constructor);
                 newState.inventory = inventory;
-                newState.allItemsPlaced = inventory.length === 0;
             }
         }
         this.setState(newState);
@@ -296,7 +298,7 @@ var Level = React.createClass({
                     inventory={this.state.inventory}
                     onStart={this.start}
                     onReset={this.reset}
-                    allItemsPlaced={this.state.allItemsPlaced}
+                    areSomeItemsPlaced={this.areSomeItemsPlaced()}
                     isPlacementMode={this.state.isPlacementMode}
                     mapDimensions={this.props.mapDimensions}
                     onDragStart={this.handleDragStart}
