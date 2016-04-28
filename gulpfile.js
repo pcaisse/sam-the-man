@@ -29,6 +29,7 @@ gulp.task('dev', function() {
 });
  
 gulp.task('dist', function() {
+    process.env.NODE_ENV = 'production';
     return browserify({entries: [sourcesDir + appEntryPoint], transform: ['reactify'], debug: false})
         .bundle()
         .pipe(source(appEntryPoint))
